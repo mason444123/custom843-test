@@ -341,9 +341,20 @@
       </div>
     </article>
 
-    <!-- УФА — второе событие -->
-    <article class="event-info event-info--event event-info--ufa" id="ufa-event">
+    <!-- КОМАНДА -->
+    <article class="event-info event-info--red" id="team">
       <span class="event-info__number">02</span>
+      <p class="event-info__kicker">Казань / с 2020</p>
+      <h2 class="event-info__title">Кастом</h2>
+      <div class="event-info__body">
+        <p class="event-info__text">Кастом — команда из Казани, которая собирает вечера вокруг хип-хопа, R&amp;B и танца. Не просто ставит музыку, а придумывает, как человек проживёт ночь: кого встретит у входа, на каком треке выйдет на танцпол и с каким настроением уедет домой.</p>
+        <p class="event-info__text">Для нас площадка — часть лайнапа. Свет, звук, бар, люди, визуал и темп вечера работают вместе: можно прийти за любимыми треками, случайно познакомиться с кем-то у стойки и остаться до последнего сета.</p>
+        <p class="event-info__text">Мы не делаем «для галочки» и не пытаемся понравиться всем. Собираем своих — тех, кому важны отборная музыка, свобода в одежде и ощущение, что город на одну ночь стал чуть живее.</p>
+      </div>
+    </article>
+    <!-- УФА -->
+    <article class="event-info event-info--event event-info--ufa" id="ufa-event">
+      <span class="event-info__number">03</span>
       <p class="event-info__kicker">21 ноября / Уфа / «Истина»</p>
       <h2 class="event-info__title">КАСТОМ 2К17<br>в Уфе</h2>
       <div class="event-info__body">
@@ -355,20 +366,9 @@
         <div class="stat"><span class="stat-num">22:00—06:00</span><span class="stat-label">Время</span></div>
         <div class="stat"><span class="stat-num">«ИСТИНА»</span><span class="stat-label">Уфа · Комсомольская ул., 2</span></div>
       </div>
-      <div class="event-info__closing"><p class="event-info__details">Билеты: стандарт — 800 ₽ · быстрый вход — 1 200 ₽ · групповой на 3 человек — 2 000 ₽ при одновременном входе</p></div>
+      <div class="event-info__closing"><p class="event-info__details">Билеты: стандарт — 800 ₽ · быстрый вход — 1 200 ₽ · групповой на 3 человек — 2 000 ₽ при одновременном входе</p><button type="button" class="event-ticket-cta is-revealed" data-ticket-open data-ticket-url="https://voroh.ru/widget/event/1044521/01a1b638-1b43-8ffb-bc73-d745b7eaf86e/" data-ticket-title="КАСТОМ 2К17 · Уфа" data-ticket-date="21 ноября"><span>Купить билет</span></button></div>
     </article>
 
-    <!-- КОМАНДА -->
-    <article class="event-info event-info--red" id="team">
-      <span class="event-info__number">03</span>
-      <p class="event-info__kicker">Казань / с 2020</p>
-      <h2 class="event-info__title">Кастом</h2>
-      <div class="event-info__body">
-        <p class="event-info__text">Кастом — команда из Казани, которая собирает вечера вокруг хип-хопа, R&amp;B и танца. Не просто ставит музыку, а придумывает, как человек проживёт ночь: кого встретит у входа, на каком треке выйдет на танцпол и с каким настроением уедет домой.</p>
-        <p class="event-info__text">Для нас площадка — часть лайнапа. Свет, звук, бар, люди, визуал и темп вечера работают вместе: можно прийти за любимыми треками, случайно познакомиться с кем-то у стойки и остаться до последнего сета.</p>
-        <p class="event-info__text">Мы не делаем «для галочки» и не пытаемся понравиться всем. Собираем своих — тех, кому важны отборная музыка, свобода в одежде и ощущение, что город на одну ночь стал чуть живее.</p>
-      </div>
-    </article>
     <article class="event-info event-info--red" id="telegram">
       <span class="event-info__number">04</span>
       <p class="event-info__kicker">Свой круг / 10% на первый билет</p>
@@ -510,6 +510,7 @@
           const endpoint=trigger?.dataset?.ticketUrl || (ticketFrame.dataset && ticketFrame.dataset.src) || TICKET_URL;
           const title=trigger?.dataset?.ticketTitle;
           if (title) document.getElementById('ticketTitle').textContent=title;
+          document.querySelector('.ticket-modal__eyebrow').textContent='Билеты · '+(trigger?.dataset?.ticketDate || '20 ноября');
           if (endpoint && ticketFrame.getAttribute('src')!==endpoint) ticketFrame.src=endpoint;
         }
         if (typeof toggleMenu==='function') toggleMenu(false);
