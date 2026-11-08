@@ -192,6 +192,27 @@
     .project-stage--pika .project-card { position:relative; top:auto; height:min(125vw, 100svh); }
     .project-stage--pika .project-media { width:100%; height:100%; transform:none; }
 
+    /* Staging: event selector, kept separate from the existing event content. */
+    .upcoming { position:relative; padding:clamp(58px,8vw,118px) clamp(20px,8vw,130px) clamp(88px,10vw,145px); background:#0b0a0a; color:#f4ebe5; }
+    .upcoming__header { display:flex; justify-content:space-between; align-items:end; gap:20px; padding-bottom:28px; border-bottom:1px solid #74403b; }
+    .upcoming__label { margin:0 0 16px; color:#ff6959; font-size:12px; letter-spacing:.18em; text-transform:uppercase; }
+    .upcoming__title { margin:0; font-family:Didot,"Bodoni MT",Georgia,serif; font-size:clamp(48px,7vw,98px); font-weight:400; line-height:.92; letter-spacing:-.055em; text-transform:uppercase; }
+    .upcoming__note { margin:0; color:#c1a7a1; font-size:13px; letter-spacing:.08em; text-transform:uppercase; }
+    .upcoming__grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:clamp(16px,2.5vw,36px); margin-top:32px; }
+    .upcoming-card { min-width:0; display:flex; flex-direction:column; background:#17100f; border:1px solid #51302d; }
+    .upcoming-card__visual { position:relative; aspect-ratio:1.7; overflow:hidden; background:#210b0a; }
+    .upcoming-card__visual img { width:100%; height:100%; display:block; object-fit:cover; object-position:center; }
+    .upcoming-card__visual--ufa { display:flex; flex-direction:column; justify-content:space-between; padding:clamp(20px,3vw,42px); background:radial-gradient(circle at 80% 25%,#a41f19 0,transparent 42%),linear-gradient(135deg,#4a0b09,#140a0a 75%); }
+    .upcoming-card__visual--ufa::after { content:'УФА'; position:absolute; right:-.03em; bottom:-.15em; color:rgba(255,105,89,.15); font-family:Didot,"Bodoni MT",Georgia,serif; font-size:clamp(100px,18vw,250px); letter-spacing:-.09em; line-height:.8; }
+    .upcoming-card__stamp { position:relative; z-index:1; color:#ffe2d9; font-size:12px; letter-spacing:.18em; text-transform:uppercase; }
+    .upcoming-card__body { flex:1; display:flex; flex-direction:column; align-items:flex-start; padding:clamp(22px,3vw,42px); }
+    .upcoming-card__meta { margin:0 0 14px; color:#ff8e80; font-size:12px; letter-spacing:.12em; line-height:1.4; text-transform:uppercase; }
+    .upcoming-card__city { margin:0; color:#fff5ef; font-family:Didot,"Bodoni MT",Georgia,serif; font-size:clamp(48px,5vw,76px); font-weight:400; line-height:.9; letter-spacing:-.06em; text-transform:uppercase; }
+    .upcoming-card__desc { margin:18px 0 28px; color:#d8c4bd; font-size:16px; line-height:1.5; }
+    .upcoming-card__link { display:inline-flex; align-items:center; justify-content:center; min-height:46px; margin-top:auto; padding:12px 21px; border:1px solid #ff6959; color:#fff4ee; font-size:12px; font-weight:700; letter-spacing:.08em; text-decoration:none; text-transform:uppercase; transition:background .2s,color .2s; }
+    .upcoming-card__link:hover,.upcoming-card__link:focus-visible { background:#ff6959; color:#170908; outline:2px solid #fff; outline-offset:3px; }
+    @media(max-width:768px) { .upcoming { padding:56px 20px 100px; }.upcoming__header { display:block; }.upcoming__note { margin-top:20px; }.upcoming__grid { grid-template-columns:1fr; gap:20px; margin-top:24px; }.upcoming-card__visual { aspect-ratio:1.65; }.upcoming-card__visual--ufa::after { font-size:clamp(110px,34vw,210px); }.upcoming-card__body { padding:24px; } }
+
 </style>
   <noscript><style>
     /* Без JS шторы и intro не запускаются: слово-герой обязано остаться видимым. */
@@ -261,6 +282,20 @@
     <button class="hero-event-link" id="heroEventLink" type="button">Узнать о событии</button>
   </main>
     <button class="ticket-float" type="button" data-ticket-open data-ticket-url="https://voroh.ru/widget/event/1043748/01a17876-e4b4-8c39-9c9a-f002803f071c/" data-ticket-title="CUSTOM × Вкусы Казани" aria-label="Открыть покупку билета на CUSTOM × Вкусы Казани"><span class="ticket-float__eyebrow">20.11 · «КОРСТОН», ул. Н.Ершова, д.1</span><span class="ticket-float__label">Купить билет</span></button>
+
+  <section class="upcoming" id="upcoming" aria-labelledby="upcoming-title">
+    <div class="upcoming__header"><div><p class="upcoming__label">CUSTOM / АФИША</p><h2 class="upcoming__title" id="upcoming-title">Ближайшие<br>события</h2></div><p class="upcoming__note">Выбирай свой город</p></div>
+    <div class="upcoming__grid">
+      <article class="upcoming-card">
+        <div class="upcoming-card__visual"><img src="assets/custom/hero-kazan-desktop.webp" alt="Афиша CUSTOM × Вкусы Казани" loading="lazy" width="1920" height="768"></div>
+        <div class="upcoming-card__body"><p class="upcoming-card__meta">20 ноября / «КОРСТОН», 3 этаж</p><h3 class="upcoming-card__city">Казань</h3><p class="upcoming-card__desc">CUSTOM × Вкусы Казани</p><a class="upcoming-card__link" href="#event">Подробнее о событии</a></div>
+      </article>
+      <article class="upcoming-card">
+        <div class="upcoming-card__visual upcoming-card__visual--ufa"><span class="upcoming-card__stamp">CUSTOM / УФА</span><span class="upcoming-card__stamp">Скоро</span></div>
+        <div class="upcoming-card__body"><p class="upcoming-card__meta">Дата и площадка — скоро</p><h3 class="upcoming-card__city">Уфа</h3><p class="upcoming-card__desc">Информация о событии появится позже.</p><a class="upcoming-card__link" href="ufa.html">Подробнее о событии</a></div>
+      </article>
+    </div>
+  </section>
 
   <section class="projects" aria-label="Кастом проекты">
     <!-- БЛИЖАЙШЕЕ СОБЫТИЕ — первый блок после hero -->
