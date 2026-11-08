@@ -194,7 +194,7 @@
 
     /* Staging: event selector, kept separate from the existing event content. */
     .upcoming { position:relative; padding:clamp(58px,8vw,118px) clamp(20px,8vw,130px) clamp(88px,10vw,145px); background:#0b0a0a; color:#f4ebe5; }
-    body.upcoming-visible .ticket-float { opacity:0!important; pointer-events:none!important; }
+    body.upcoming-visible .ticket-float, body.ufa-visible .ticket-float { opacity:0!important; pointer-events:none!important; }
     .upcoming__header { display:flex; justify-content:space-between; align-items:end; gap:20px; padding-bottom:28px; border-bottom:1px solid #74403b; }
     .upcoming__label { margin:0 0 16px; color:#ff6959; font-size:12px; letter-spacing:.18em; text-transform:uppercase; }
     .upcoming__title { margin:0; font-family:Didot,"Bodoni MT",Georgia,serif; font-size:clamp(48px,7vw,98px); font-weight:400; line-height:.92; letter-spacing:-.055em; text-transform:uppercase; }
@@ -292,8 +292,8 @@
         <div class="upcoming-card__body"><p class="upcoming-card__meta">20 ноября / «КОРСТОН», 3 этаж</p><h3 class="upcoming-card__city">Казань</h3><p class="upcoming-card__desc">CUSTOM × Вкусы Казани</p><a class="upcoming-card__link" href="#event">Подробнее о событии</a></div>
       </article>
       <article class="upcoming-card">
-        <div class="upcoming-card__visual upcoming-card__visual--ufa"><span class="upcoming-card__stamp">CUSTOM / УФА</span><span class="upcoming-card__stamp">Скоро</span></div>
-        <div class="upcoming-card__body"><p class="upcoming-card__meta">Дата и площадка — скоро</p><h3 class="upcoming-card__city">Уфа</h3><p class="upcoming-card__desc">Информация о событии появится позже.</p><a class="upcoming-card__link" href="ufa.html">Подробнее о событии</a></div>
+        <div class="upcoming-card__visual"><img src="assets/custom/ufa-2k17-preview.webp?v=1" alt="Фрагмент афиши Кастом 2К17" loading="lazy" width="1305" height="705"></div>
+    <div class="upcoming-card__body"><p class="upcoming-card__meta">21 ноября / «Истина», ул. Комсомольская, 2</p><h3 class="upcoming-card__city">Уфа</h3><p class="upcoming-card__desc">КАСТОМ 2К17 · 22:00–06:00</p><a class="upcoming-card__link" href="#ufa-event">Подробнее о событии</a></div>
       </article>
     </div>
   </section>
@@ -341,10 +341,26 @@
       </div>
     </article>
 
-    <!-- ПРЕДЫДУЩЕЕ СОБЫТИЕ -->
-        <!-- КОМАНДА — третий блок -->
-    <article class="event-info event-info--red" id="team">
+    <!-- УФА — второе событие -->
+    <article class="event-info event-info--event event-info--ufa" id="ufa-event">
       <span class="event-info__number">02</span>
+      <p class="event-info__kicker">21 ноября / Уфа / «Истина»</p>
+      <h2 class="event-info__title">КАСТОМ 2К17<br>в Уфе</h2>
+      <div class="event-info__body">
+        <p class="event-info__text">21 ноября встречаемся в Уфе на КАСТОМ 2К17. Собирай друзей и готовься к ночи, которая вернёт тебя в 2017-й.</p>
+        <p class="event-info__text">Увидимся в «Истине»: начинаем в 22:00 и встречаем утро вместе.</p>
+      </div>
+      <div class="event-info__stats">
+        <div class="stat"><span class="stat-num">21.11</span><span class="stat-label">Суббота</span></div>
+        <div class="stat"><span class="stat-num">22:00—06:00</span><span class="stat-label">Время</span></div>
+        <div class="stat"><span class="stat-num">«ИСТИНА»</span><span class="stat-label">Уфа · Комсомольская ул., 2</span></div>
+      </div>
+      <div class="event-info__closing"><p class="event-info__details">Билеты: стандарт — 800 ₽ · быстрый вход — 1 200 ₽ · групповой на 3 человек — 2 000 ₽ при одновременном входе</p></div>
+    </article>
+
+    <!-- КОМАНДА -->
+    <article class="event-info event-info--red" id="team">
+      <span class="event-info__number">03</span>
       <p class="event-info__kicker">Казань / с 2020</p>
       <h2 class="event-info__title">Кастом</h2>
       <div class="event-info__body">
@@ -354,7 +370,7 @@
       </div>
     </article>
     <article class="event-info event-info--red" id="telegram">
-      <span class="event-info__number">03</span>
+      <span class="event-info__number">04</span>
       <p class="event-info__kicker">Свой круг / 10% на первый билет</p>
       <h2 class="event-info__title">Залетай<br>в Telegram</h2>
       <div class="event-info__body"><p class="event-info__text">Не ждём, пока афиша сама найдёт тебя. В боте — ранние анонсы, свои промокоды и десять процентов на первый билет.</p><p class="event-info__text">Покажи, что ты с нами до того, как станет шумно.</p></div>
@@ -362,9 +378,9 @@
     </article>
     <div class="project-stage project-stage--pika"><article class="project-card" data-project><figure class="project-media"><img class="project-pika-poster" src="assets/custom/pika-2017-nov20-20261105.webp" alt="Афиша вечеринки «Назад в 2017»: специальный гость Пика, 20 ноября" loading="lazy"><div class="project-copy" aria-hidden="true"></div></figure></article></div>
     
-    <!-- ЛОКАЦИЯ — четвёртый блок -->
+    <!-- ЛОКАЦИЯ -->
     <article class="event-info event-info--location">
-      <span class="event-info__number">04</span>
+      <span class="event-info__number">05</span>
       <p class="event-info__kicker">Точка сбора</p>
       <h2 class="event-info__title">«КОРСТОН»,<br>3 этаж</h2>
       <p class="event-info__text">В прошлый раз мы собрали больше 1200+ человек и не смогли вместить всех желающих. Многие просили повторить вечеринку — и тогда мы поняли: нам не подходит маленькая площадка. Мы искали место, которое сможет вместить всех, кто хочет вернуться в то время. И нашли.</p>
@@ -536,10 +552,11 @@
       heroScrollCue?.classList.toggle('is-past',pastHero);
     }
     window.addEventListener('scroll',updateHeroActions,{passive:true}); updateHeroActions();
-    const upcomingSection=document.getElementById('upcoming');
+    const upcomingSection=document.getElementById('upcoming'), ufaSection=document.getElementById('ufa-event');
     function syncUpcomingVisibility() {
-      const rect=upcomingSection.getBoundingClientRect();
+      const rect=upcomingSection.getBoundingClientRect(), ufaRect=ufaSection.getBoundingClientRect();
       document.body.classList.toggle('upcoming-visible',rect.top < window.innerHeight && rect.bottom > 0);
+      document.body.classList.toggle('ufa-visible',ufaRect.top < window.innerHeight && ufaRect.bottom > 0);
     }
     window.addEventListener('scroll',syncUpcomingVisibility,{passive:true});
     window.addEventListener('resize',syncUpcomingVisibility);
