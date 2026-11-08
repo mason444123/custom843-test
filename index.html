@@ -1,0 +1,513 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Кастом</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+  <link rel="stylesheet" href="https://voroh.ru/sources/widget/dist/assets/widget-popup-style.css?v=1790788050">
+  <script defer src="https://voroh.ru/sources/widget/dist/assets/widget-popup.js?v=1790788050"></script>
+  <style>
+    * { box-sizing:border-box; }
+    html, body { margin:0; min-height:100%; background:#0c0c0b; overscroll-behavior-y:none; }
+    body { overflow-x:hidden; font-family:Arial,Helvetica,sans-serif; }
+    /* Верхняя навигация без подложки: только логотип и кнопка меню. */
+
+    /* SandlerFest hero — copied interaction and geometry */
+    #video-wrapper { position:relative; width:100vw; height:100vh; height:100svh; min-height:100svh; margin-left:calc(50% - 50vw); overflow:hidden; background:#0c0c0b; isolation:isolate; }
+    #bgvid { width:100%; height:100%; min-width:100%; min-height:100%; object-fit:cover; object-position:center; position:absolute; inset:0; z-index:0; opacity:0; transform:scale(1.045); transition:opacity 1s ease; }
+    #bgfallback { position:absolute; inset:0; width:100%; height:100%; min-width:100%; min-height:100%; object-fit:cover; object-position:center; transform:scale(1.045); z-index:0; opacity:1; transition:opacity .6s ease; pointer-events:none; }
+    /* Постер уже содержит название, дату и место — не дублируем текст поверх него. */
+    .hero-lockup { display:none; }
+    /* На компьютере hero повторяет пропорции горизонтального постера: без кропа и чёрных полос. */
+    @media (min-width:769px) { #video-wrapper { height:auto; min-height:0; max-height:none; aspect-ratio:5 / 2; } #video-wrapper picture { display:block; width:100%; height:100%; } #bgfallback { object-fit:contain; transform:none; } }
+    /* Убираем анимированные стрелки прокрутки из hero. */
+    #heroScrollCue { display:none!important; }
+    body.video-fallback #bgfallback { opacity:1; }
+    body.video-fallback #bgvid { display:none; }
+    #overlay-container { position:absolute; inset:0; background:rgba(0,0,0,.35); z-index:2; opacity:0; transition:opacity 1s ease; pointer-events:none; }
+    .hero-lockup { position:absolute; inset:0; z-index:4; width:100%; height:100%; color:#fff; text-align:center; pointer-events:none; }
+    /* Реальный video-fill: второй синхронный кадр становится ч/б и виден только через маску букв. */
+
+
+    .hero-kicker { position:absolute; left:50%; width:max-content; max-width:88vw; margin:0; font-size:clamp(12px,1.35vw,20px); font-weight:800; letter-spacing:.1em; line-height:1.04; text-transform:uppercase; opacity:0; filter:blur(6px); transition:transform 1s cubic-bezier(.16,1,.3,1),opacity .55s ease,filter .8s ease; }
+    .hero-kicker--top { top:29%; transform:translate(-50%,20px) rotate(-3deg); }.hero-kicker--bottom { top:67%; transform:translate(-50%,-20px) rotate(2deg); }
+    /* Большой знак Custom убран с видео: бренд остаётся компактно по центру верхней навигации. */
+    #overlay-logo,#logo-negative { display:none!important; }
+
+    .curtain { position:fixed; top:0; width:50vw; height:100vh; height:100svh; background:#000; z-index:9998; transition:transform 2.4s cubic-bezier(.83,0,.17,1); }
+    .curtain.left { left:0; transform:translateX(0); }
+    .curtain.right { right:0; transform:translateX(0); }
+    body.video-started .curtain.left { transform:translateX(-100%); }
+    body.video-started .curtain.right { transform:translateX(100%); }
+    body.video-started #overlay-container { opacity:1; } body.video-started .hero-kicker { opacity:.96; filter:blur(0); transform:translate(-50%,0) rotate(0); transition-delay:.38s; }
+    @keyframes pulse { 0%{transform:scale(1);opacity:1} 50%{transform:scale(1.1);opacity:.7} 100%{transform:scale(1);opacity:1} }
+
+    /* Верхняя навигация: повёрнутая надпись Custom по центру и меню справа. */
+    .site-brand { position:fixed; z-index:10002; top:18px; left:50%; display:inline-block; transform:translate(-50%,0) rotate(-6deg); transform-origin:center; opacity:0; pointer-events:none; color:#f4eee8; font-family:Arial,Helvetica,sans-serif; font-size:clamp(22px,3vw,30px); font-weight:900; letter-spacing:-.08em; line-height:1; text-transform:lowercase; text-shadow:0 2px 14px rgba(0,0,0,.55),0 0 2px rgba(0,0,0,.4); text-decoration:none; transition:opacity .45s ease .34s,transform .5s cubic-bezier(.16,1,.3,1); }
+    .site-brand.is-visible { opacity:.98; pointer-events:auto; }
+    .site-brand:hover,.site-brand:focus-visible { color:#ff5a4d; transform:translate(-50%,-2px) rotate(-6deg) scale(1.04); outline:none; }
+    .site-brand img { display:none; }
+    /* Exact mobile burger geometry from SandlerFest / Tilda's t-menuburger_second. */
+    .tmenu-mobile { position:fixed; z-index:10002; top:18px; right:18px; width:64px; height:64px; display:none; background:transparent; }
+    .tmenu-mobile.is-visible { display:block; }
+    .tmenu-mobile__container { position:relative; width:64px; height:64px; }
+    .t-menuburger { position:absolute; top:22px; right:18px; width:28px; height:20px; padding:0; border:0; background:transparent; cursor:pointer; transition:transform .5s ease-in-out; }
+    .t-menuburger span { position:absolute; right:0; display:block; height:3px; background:#bf1212; transform-origin:center; transition:top .35s cubic-bezier(.83,0,.17,1),width .35s cubic-bezier(.83,0,.17,1),transform .45s cubic-bezier(.83,0,.17,1),opacity .2s ease,background-color .25s ease; }
+    .t-menuburger span:nth-child(1) { top:0; width:28px; }
+    .t-menuburger span:nth-child(2), .t-menuburger span:nth-child(3) { top:8px; width:80%; }
+    .t-menuburger span:nth-child(4) { top:16px; width:28px; }
+    .t-menuburger[aria-expanded="true"] span { background:#fff; }.t-menuburger[aria-expanded="true"] span:nth-child(1) { top:8px; transform:rotate(45deg); }.t-menuburger[aria-expanded="true"] span:nth-child(2),.t-menuburger[aria-expanded="true"] span:nth-child(3) { width:0; opacity:0; }.t-menuburger[aria-expanded="true"] span:nth-child(4) { top:8px; transform:rotate(-45deg); }
+    .site-menu { position:fixed; z-index:10000; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; overflow:auto; visibility:hidden; pointer-events:none; clip-path:inset(0 0 100% 0); background:#0a0909; color:#fff; padding:80px 9vw 8vw; transition:clip-path .8s cubic-bezier(.83,0,.17,1),visibility 0s linear .8s; }
+    .site-menu::before,.site-menu::after { content:''; position:absolute; z-index:0; top:0; bottom:0; width:51%; opacity:1; background:#050505; will-change:transform,opacity; transition:transform .8s cubic-bezier(.83,0,.17,1),opacity .01s linear .79s; }.site-menu::before { left:0; transform:translateX(-102%); }.site-menu::after { right:0; transform:translateX(102%); transition-delay:0s,.06s; }
+    .site-menu.is-open { visibility:visible; pointer-events:auto; clip-path:inset(0); transition:clip-path .8s cubic-bezier(.83,0,.17,1),visibility 0s; }.site-menu.is-open::before,.site-menu.is-open::after { opacity:0; transform:translateX(0); transition:transform .8s cubic-bezier(.83,0,.17,1),opacity .18s ease .62s; }
+    /* Полноэкранное editorial-меню: крупная серийная типографика вместо обычного списка ссылок. */
+    .site-menu { text-align:center; background:radial-gradient(circle at 50% 45%,#24100f 0,transparent 36%),#0a0909; }
+    .site-menu > .nav-link { position:relative; z-index:1; display:flex; align-items:baseline; justify-content:center; gap:13px; color:#f6eee8; text-decoration:none; font-family:Didot,"Bodoni MT",Georgia,serif; font-size:clamp(38px,5.2vw,78px); font-weight:400; line-height:.9; letter-spacing:-.07em; margin:0 0 8px; opacity:0; transform:translateY(34px); transition:color .22s ease,opacity .4s ease,transform .65s cubic-bezier(.22,1,.36,1); transition-delay:0s; }
+    .site-menu.is-open > .nav-link { opacity:1; transform:translateY(0); transition-delay:calc(.18s + var(--i) * .065s); }
+    .site-menu > .nav-link::after { content:''; position:absolute; right:-8px; bottom:-7px; left:calc(1.1em + 13px); height:2px; background:#e30b08; transform:scaleX(0); transform-origin:right; transition:transform .26s ease; }
+    .site-menu > .nav-link:hover,.site-menu > .nav-link:focus-visible { color:#ff4b3d; outline:none; }.site-menu > .nav-link:hover::after,.site-menu > .nav-link:focus-visible::after { transform:scaleX(1); transform-origin:left; }
+    .nav-index { color:#e30b08; font-family:Arial,sans-serif; font-size:10px; font-weight:800; letter-spacing:.06em; line-height:1; }
+    .site-menu .nav-menu-buy { display:inline-flex; align-items:center; justify-content:center; min-width:min(72vw,286px); margin-top:24px; padding:14px 25px 13px; border:1px solid #ff4b3d; border-radius:0; background:#e30b08; box-shadow:7px 7px 0 #5b0909; color:#160707; font-family:Arial,sans-serif; font-size:clamp(17px,4.5vw,23px); font-weight:900; letter-spacing:-.035em; line-height:1; text-decoration:none; text-transform:uppercase; opacity:0; transform:translateY(34px); transition:background .2s ease,color .2s ease,box-shadow .2s ease,opacity .4s ease,transform .65s cubic-bezier(.22,1,.36,1); transition-delay:0s; }
+    .site-menu.is-open .nav-menu-buy { opacity:1; transform:translateY(0); transition-delay:calc(.18s + var(--i) * .065s); }.site-menu .nav-menu-buy:hover,.site-menu .nav-menu-buy:focus-visible { background:#ff4b3d; color:#fff8f4; box-shadow:3px 3px 0 #5b0909; outline:none; }
+    .menu-socials { position:relative; z-index:1; display:flex; gap:28px; justify-content:center; margin-top:35px; opacity:0; transform:translateY(24px); transition:opacity .4s ease .55s,transform .5s ease .55s; }
+    .site-menu.is-open .menu-socials { opacity:1; transform:translateY(0); }
+    .site-menu .menu-social { display:block; padding:0 0 4px; border:0; background:transparent; color:#a79a93; font-family:Arial,sans-serif; font-size:11px; font-weight:800; letter-spacing:.08em; line-height:1; text-decoration:none; text-transform:uppercase; transition:color .2s ease,transform .2s ease; }
+    .site-menu .menu-social::after { content:none; }.site-menu .menu-social:hover,.site-menu .menu-social:focus-visible { color:#ff4b3d; background:transparent; transform:translateY(-3px) scale(1.08); outline:none; }.site-menu .menu-social i { font-size:30px; }
+
+    /* Полупрозрачный двойной шеврон: показывает, что история продолжается ниже видео. */
+    .hero-scroll-cue { position:absolute; z-index:4; left:50%; bottom:clamp(24px,4.5vh,50px); width:92px; height:82px; padding:0; border:0; background:transparent; color:rgba(255,255,255,.62); cursor:pointer; transform:translateX(-50%); opacity:0; transition:opacity .45s ease,transform .45s cubic-bezier(.22,1,.36,1),color .2s ease; }.hero-scroll-cue::before,.hero-scroll-cue::after { content:''; position:absolute; left:50%; border-right:1.7px solid currentColor; border-bottom:1.7px solid currentColor; transform:translateX(-50%) rotate(45deg); opacity:0; }.hero-scroll-cue::after { transform:translateX(-50%) rotate(225deg); }.hero-scroll-cue::before { top:3px; width:32px; height:32px; animation:chevron-drop 2.45s cubic-bezier(.22,.61,.36,1) infinite; }.hero-scroll-cue::after { top:34px; width:18px; height:18px; opacity:.52; animation:chevron-drop-back 2.45s cubic-bezier(.22,.61,.36,1) .18s infinite; }.video-started .hero-scroll-cue { opacity:1; transition-delay:1.45s; }.hero-scroll-cue:hover,.hero-scroll-cue:focus-visible { color:#ff4b3d; outline:none; }.hero-scroll-cue.is-past { opacity:0; pointer-events:none; transform:translate(-50%,16px); }.hero-scroll-cue.is-past::before,.hero-scroll-cue.is-past::after { animation:none; }@keyframes chevron-drop { 0%{opacity:0; transform:translate(-50%,-7px) rotate(45deg)} 25%{opacity:.9} 72%{opacity:.18;transform:translate(-50%,7px) rotate(45deg)} 100%{opacity:0;transform:translate(-50%,10px) rotate(45deg)} }@keyframes chevron-drop-back { 0%{opacity:0; transform:translate(-50%,-4px) rotate(225deg)} 28%{opacity:.46} 70%{opacity:.08;transform:translate(-50%,5px) rotate(225deg)} 100%{opacity:0;transform:translate(-50%,7px) rotate(225deg)} }
+    .hero-event-link { position:absolute; z-index:5; right:clamp(16px,3vw,48px); bottom:clamp(90px,14vh,170px); display:inline-flex; align-items:center; gap:9px; min-height:48px; padding:12px 22px 11px; border:1px solid rgba(255,105,89,.6); background:linear-gradient(135deg,rgba(15,10,10,.92),rgba(30,12,11,.88)); color:#fff4ee; font-family:Arial,Helvetica,sans-serif; font-size:11px; font-weight:900; letter-spacing:.12em; line-height:1; text-transform:uppercase; cursor:pointer; opacity:0; backdrop-filter:blur(14px) saturate(1.1); -webkit-backdrop-filter:blur(14px) saturate(1.1); box-shadow:0 8px 28px rgba(0,0,0,.42),inset 0 0 0 1px rgba(255,255,255,.03); transition:opacity .45s ease 1.2s,background .24s ease,color .2s ease,transform .2s ease,box-shadow .24s ease,border-color .24s ease; }
+    .hero-event-link::before { content:''; width:5px; height:5px; border:0; border-top:1.6px solid #e30b08; border-right:1.6px solid #e30b08; transform:rotate(45deg); flex:0 0 auto; transition:transform .3s cubic-bezier(.16,1,.3,1),border-color .2s ease; }
+    .video-started .hero-event-link { opacity:1; }.hero-event-link:hover,.hero-event-link:focus-visible { background:linear-gradient(135deg,rgba(227,11,8,.9),rgba(255,75,61,.85)); color:#fff8f4; border-color:#ff6959; box-shadow:0 12px 36px rgba(227,11,8,.32),inset 0 0 0 1px rgba(255,255,255,.06); transform:translateY(-3px); outline:none; }.hero-event-link:focus-visible { outline:2px solid #ff6959; outline-offset:3px; }.hero-event-link:hover::before { transform:rotate(45deg) translate(3px,-3px); border-color:#fff8f4; }
+    @media (max-width:768px) { .hero-event-link { right:14px; bottom:46px; min-height:44px; padding:10px 16px; font-size:10px; } .hero-scroll-cue { bottom:12px; left:44px; transform:translateX(-50%) scale(.72); } .hero-scroll-cue.is-past { transform:translate(-50%,16px) scale(.72); } }
+
+    /* Билет появляется после первого скролла строго по центру через маску, а не простым fade. */
+    .ticket-float { position:fixed; z-index:10001; left:50%; bottom:clamp(12px,1.5vw,22px); display:flex; flex-direction:column; align-items:center; gap:5px; min-width:min(248px,calc(100vw - 36px)); padding:15px 23px 16px; overflow:hidden; border:1px solid #ff6959; border-radius:0; background:#e30b08; box-shadow:10px 10px 0 rgba(84,8,7,.78); color:#190706; cursor:pointer; opacity:0; pointer-events:none; transform:translate(-50%,42px) scale(.86); clip-path:inset(0 100% 0 0); transition:clip-path .9s cubic-bezier(.76,0,.24,1),opacity .66s cubic-bezier(.22,1,.36,1) .04s,transform .9s cubic-bezier(.16,1,.3,1),background .2s ease,box-shadow .2s ease; }.ticket-float::before { content:''; position:absolute; z-index:0; inset:-30% auto -30% -38%; width:28%; background:rgba(255,237,223,.68); transform:skewX(-22deg) translateX(-360%); }.ticket-float>* { position:relative; z-index:1; opacity:0; transform:translateY(13px); transition:opacity .42s ease .34s,transform .72s cubic-bezier(.16,1,.3,1) .34s; }.ticket-float__eyebrow { font-size:10px; font-weight:900; letter-spacing:.12em; line-height:1; text-transform:uppercase; color:rgba(25,7,6,.82); }.ticket-float__label { font-family:Didot,"Bodoni MT",Georgia,serif; font-size:clamp(26px,3.8vw,38px); font-weight:700; letter-spacing:-.055em; line-height:.83; text-shadow:0 1px 0 rgba(255,223,208,.34); }.show-ticket-float .ticket-float { opacity:1; pointer-events:auto; transform:translate(-50%,0) scale(1); clip-path:inset(0 0 0 0); }.show-ticket-float .ticket-float>* { opacity:1; transform:translateY(0); }.show-ticket-float .ticket-float::before { animation:ticket-sheen 1.15s cubic-bezier(.76,0,.24,1) .22s both; }.show-ticket-float .ticket-float.is-docked { opacity:0; pointer-events:none; transform:translate(-50%,42px) scale(.86); clip-path:inset(0 100% 0 0); transition:clip-path .7s cubic-bezier(.83,0,.17,1),opacity .55s cubic-bezier(.83,0,.17,1),transform .7s cubic-bezier(.83,0,.17,1); }.ticket-float:hover,.ticket-float:focus-visible { background:#ff4b3d; box-shadow:4px 4px 0 rgba(84,8,7,.78); outline:none; }.ticket-float:active { transform:translate(-50%,3px) scale(.98); box-shadow:1px 1px 0 rgba(84,8,7,.78); }@keyframes ticket-sheen { to { transform:skewX(-22deg) translateX(820%); } }
+
+    /* Editorial ticket stub: событие остаётся первым уровнем, действие — крупным вторым. */
+    .ticket-float { width:min(370px,calc(100vw - 32px)); min-width:0; align-items:flex-start; gap:7px; padding:17px 72px 18px 22px; border:1px solid rgba(255,105,89,.78); border-radius:0; background:linear-gradient(115deg,rgba(191,18,18,.22),transparent 46%),rgba(15,10,10,.91); box-shadow:0 18px 52px rgba(0,0,0,.46),inset 0 0 0 1px rgba(255,255,255,.035); color:#fff4ee; text-align:left; backdrop-filter:blur(16px) saturate(1.18); -webkit-backdrop-filter:blur(16px) saturate(1.18); clip-path:inset(0 100% 0 0); transform:translate(-50%,36px) scale(.94); transition:clip-path .8s cubic-bezier(.76,0,.24,1),opacity .46s ease,transform .62s cubic-bezier(.16,1,.3,1),background .24s ease,border-color .24s ease,box-shadow .24s ease; }
+    .ticket-float::before { inset:0 auto 0 0; width:4px; background:#e30b08; transform:none; box-shadow:0 0 24px rgba(227,11,8,.64); }
+    .ticket-float::after { content:''; position:absolute; z-index:2; top:50%; right:20px; width:38px; height:38px; border:1px solid rgba(255,105,89,.58); background-color:rgba(227,11,8,.12); background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='38' height='38' viewBox='0 0 38 38'%3E%3Cpath d='M12 19h13M20 14l5 5-5 5' fill='none' stroke='%23fff4ee' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E"); background-position:center; background-repeat:no-repeat; transform:translateY(-50%); transition:background-color .24s ease,border-color .24s ease,transform .34s cubic-bezier(.16,1,.3,1); }
+    .ticket-float>* { align-self:flex-start; text-align:left; }
+    .ticket-float__eyebrow { color:#ff6959; font-size:10px; font-weight:900; letter-spacing:.13em; }
+    .ticket-float__label { color:#fff4ee; font-family:Didot,"Bodoni MT",Georgia,serif; font-size:clamp(30px,3.4vw,40px); font-weight:400; letter-spacing:-.06em; line-height:.82; text-shadow:none; }
+    .show-ticket-float .ticket-float { opacity:1; pointer-events:auto; transform:translate(-50%,0) scale(1); clip-path:inset(0 0 0 0); }
+    .show-ticket-float .ticket-float::before { animation:ticket-rail-pulse 2.8s ease-in-out .45s infinite; }
+    .show-ticket-float .ticket-float.is-docked { opacity:0; pointer-events:none; transform:translate(-50%,32px) scale(.94); clip-path:inset(0 100% 0 0); }
+    .ticket-float:hover,.ticket-float:focus-visible { background:linear-gradient(115deg,rgba(227,11,8,.34),transparent 52%),rgba(18,10,10,.96); border-color:#ff6959; box-shadow:0 22px 62px rgba(0,0,0,.56),0 0 0 1px rgba(255,105,89,.14); color:#fff; outline:none; transform:translate(-50%,-4px) scale(1.012); }
+    .ticket-float:hover::after,.ticket-float:focus-visible::after { border-color:#ff6959; background-color:#e30b08; transform:translate(4px,-50%); }
+    .ticket-float:focus-visible { outline:2px solid #fff4ee; outline-offset:4px; }
+    .ticket-float:active { transform:translate(-50%,-1px) scale(.985); }
+    @keyframes ticket-rail-pulse { 0%,100%{opacity:.72;box-shadow:0 0 16px rgba(227,11,8,.36)} 50%{opacity:1;box-shadow:0 0 30px rgba(227,11,8,.74)} }
+    @media (max-width:520px) { .ticket-float { width:calc(100vw - 28px); padding:15px 64px 16px 19px; }.ticket-float__label { font-size:31px; }.ticket-float::after { right:15px; } }
+
+    /* Билетный виджет Voroh открывается поверх сайта, а не уводит посетителя на чужую страницу. */
+.ticket-modal { position:fixed; z-index:20000; inset:0; display:grid; place-items:center; padding:18px; background:rgba(7,5,5,.76); backdrop-filter:blur(18px); -webkit-backdrop-filter:blur(18px); opacity:0; visibility:hidden; pointer-events:none; transition:opacity .42s ease,backdrop-filter .42s ease,visibility 0s linear .42s; }
+.ticket-modal.is-open { opacity:1; visibility:visible; pointer-events:auto; transition:opacity .42s ease,backdrop-filter .42s ease; }
+.ticket-modal__panel { position:relative; width:min(100%,680px); max-height:min(88dvh,780px); overflow:hidden; background:#0d0b0b; border:1px solid rgba(255,105,89,.5); box-shadow:18px 18px 0 rgba(104,9,8,.72); transform:translateY(26px) scale(.96); filter:blur(8px); transition:transform .55s cubic-bezier(.16,1,.3,1),filter .45s ease,box-shadow .3s ease; }
+    .ticket-modal.is-open .ticket-modal__panel { transform:translateY(0) scale(1); filter:blur(0); }.ticket-modal__head { display:flex; align-items:center; justify-content:space-between; min-height:68px; padding:16px 20px 15px 24px; border-bottom:1px solid rgba(255,105,89,.25); }.ticket-modal__eyebrow { margin:0 0 3px; color:#ff6959; font-size:10px; font-weight:800; letter-spacing:.12em; text-transform:uppercase; }.ticket-modal__title { margin:0; color:#f4ebe5; font-family:Didot,"Bodoni MT",Georgia,serif; font-size:clamp(25px,5vw,40px); font-weight:400; letter-spacing:-.055em; line-height:.85; }.ticket-modal__close { width:38px; height:38px; flex:0 0 auto; border:1px solid rgba(255,105,89,.48); border-radius:0; background:transparent; color:#f4ebe5; font-size:25px; font-weight:300; line-height:1; cursor:pointer; transition:background .2s,color .2s; }.ticket-modal__close:hover,.ticket-modal__close:focus-visible { background:#e30b08; color:#170606; outline:none; }.ticket-modal__body { max-height:calc(min(88dvh,780px) - 68px); overflow:auto; background:#fff; }.widget-inner-iframe { width:100%; min-height:520px; }.widget-tabs__iframe { display:block; width:100%; min-height:520px; border:0; }
+
+    /* Небольшое уведомление, которое не перекрывает событие. */
+    /* CTA stays low in the viewport even while the cookie notice is displayed. */
+    .ticket-float, .cookie-visible .ticket-float { bottom:-24px; }
+
+    .cookie-note { position:fixed; z-index:10003; right:16px; bottom:16px; width:min(350px,calc(100vw - 32px)); padding:15px 16px 14px; border:1px solid rgba(255,105,89,.42); background:rgba(14,11,11,.94); box-shadow:7px 7px 0 rgba(91,9,9,.58); color:#f4ebe5; backdrop-filter:blur(16px); }.cookie-note[hidden] { display:none; }.cookie-visible .ticket-float { bottom:128px; }.cookie-note__text { margin:0 0 12px; font-size:12px; line-height:1.35; }.cookie-note__text a { color:#ff6959; text-underline-offset:3px; }.cookie-note__actions { display:flex; align-items:center; justify-content:space-between; gap:14px; }.cookie-note__label { color:#aa9c94; font-size:10px; font-weight:800; letter-spacing:.08em; text-transform:uppercase; }.cookie-note__accept { padding:8px 12px; border:0; border-radius:0; background:#e30b08; color:#190706; font-size:11px; font-weight:900; letter-spacing:.04em; cursor:pointer; text-transform:uppercase; }.cookie-note__accept:hover,.cookie-note__accept:focus-visible { background:#ff4b3d; color:#fff8f4; outline:none; }
+
+    /* Тот же принцип, что у Il Capo: секция закрепляется, а раскрытие зависит от реального прогресса скролла — не от разового IntersectionObserver. */
+    .projects { position:relative; overflow:clip; padding:0; background:transparent; color:#050505; }
+    .project-stage { --reveal:0; --copy:0; position:relative; height:185svh; background:transparent; }
+    .project-card { position:sticky; top:0; width:100%; height:100svh; overflow:hidden; background:transparent; }
+    .project-media { position:absolute; inset:0; width:100vw; height:100svh; margin:0; overflow:hidden; background:transparent; clip-path:inset(0 calc((1 - var(--reveal)) * 50%) 0 calc((1 - var(--reveal)) * 50%)); transform:scale(calc(.84 + var(--reveal) * .16)); filter:brightness(.88) saturate(.92); will-change:transform,clip-path; }
+    .project-media::after { content:none; }
+    .project-media img { display:block; width:100%; height:100%; object-fit:cover; transform:scale(calc(1.18 - var(--reveal) * .18)); will-change:transform; }
+    /* Афиша — цельный исходник: не режем даты, адрес и нижний знак ради заполнения экрана. */
+    .project-media--poster { background:transparent; }
+    .project-media--poster img { object-fit:cover; object-position:center; transform:none; }
+    /* Названия получают тот же эффект, что hero: дубликат собственной фотографии в ч/б негативе, обрезанный SVG-маской. */
+    .project-title-negative { display:none; position:absolute; inset:0; z-index:2; opacity:var(--copy); pointer-events:none; transform:translateY(calc((1 - var(--copy)) * 22px)); -webkit-mask-repeat:no-repeat; mask-repeat:no-repeat; -webkit-mask-position:center 9svh; mask-position:center 9svh; -webkit-mask-size:clamp(420px,82vw,1080px) auto; mask-size:clamp(420px,82vw,1080px) auto; will-change:opacity,transform; }
+    .project-title-negative--live { -webkit-mask-image:url('assets/live-session-mask.svg?v=2'); mask-image:url('assets/live-session-mask.svg?v=2'); }
+    .project-title-negative--open { -webkit-mask-image:url('assets/open-air-mask.svg?v=2'); mask-image:url('assets/open-air-mask.svg?v=2'); }
+    .project-title-negative img { filter:grayscale(1) invert(1) contrast(.62) brightness(1.06); }
+    @supports ((-webkit-mask-image:url('assets/live-session-mask.svg?v=2')) or (mask-image:url('assets/live-session-mask.svg?v=2'))) {
+      .project-title-negative { display:block; }
+      .project-title { color:transparent; text-shadow:none; }
+    }
+    .project-copy { position:absolute; z-index:3; inset:0; display:flex; flex-direction:column; justify-content:space-between; padding:11% 5% max(9%,150px); color:#d60001; text-align:center; pointer-events:none; opacity:var(--copy); transform:translateY(calc((1 - var(--copy)) * 22px)); will-change:opacity,transform; }
+    .project-title { margin:0; font-family:Didot,"Bodoni MT",Georgia,serif; font-size:clamp(52px,8.6vw,126px); font-weight:400; letter-spacing:-.07em; line-height:.84; text-transform:uppercase; }
+    .project-subtitle { margin:0; font-size:clamp(16px,2.1vw,31px); font-weight:400; line-height:1; text-transform:uppercase; }
+    .event-info { min-height:100svh; margin:0; padding:clamp(28px,4vw,64px) 8vw; display:grid; grid-template-columns:clamp(42px,7vw,94px) 1fr; gap:clamp(18px,3vw,50px); align-content:space-between; border:0; background:radial-gradient(circle at 82% 14%,#35100f 0,transparent 34%),linear-gradient(135deg,#0c0c0b 0%,#15100f 100%); color:#ff4b3d; }
+    .event-info__number { font-size:clamp(18px,2vw,30px); line-height:1; }
+    .event-info__kicker { margin:0; color:#f0b6a8; font-size:clamp(15px,1.5vw,23px); letter-spacing:.04em; text-transform:uppercase; }
+    .event-info__title { grid-column:2; margin:clamp(18px,4vw,56px) 0 0; color:#ff513f; font-family:Didot,"Bodoni MT",Georgia,serif; font-size:clamp(46px,8vw,132px); font-weight:400; letter-spacing:-.065em; line-height:.82; text-transform:uppercase; }
+    .event-info__text { grid-column:2; max-width:760px; margin:clamp(22px,4vw,52px) 0 0; color:#f4ebe5; font-size:clamp(20px,2vw,30px); line-height:1.32; }
+    .event-info__details { grid-column:2; margin:clamp(22px,3vw,44px) 0 0; color:#ff6959; font-size:clamp(17px,1.7vw,25px); line-height:1.13; text-transform:uppercase; }
+    
+    .event-info__body { grid-column:2; }
+    .event-info__body .event-info__text { margin-top:clamp(16px,2.5vw,32px); }
+    .event-info__body .event-info__text + .event-info__text { margin-top:clamp(10px,1.5vw,18px); }
+    .event-info__stats { grid-column:2; display:grid; grid-template-columns:repeat(3,1fr); gap:clamp(12px,2vw,24px); margin:clamp(28px,4vw,52px) 0 0; }
+    .event-info__stats .stat { display:flex; flex-direction:column; gap:4px; }
+    .event-info__stats .stat-num { font-family:Didot,"Bodoni MT",Georgia,serif; font-size:clamp(26px,3vw,44px); font-weight:400; letter-spacing:-.04em; line-height:1; text-transform:uppercase; }
+    .event-info__stats .stat-label { font-size:clamp(14px,1.4vw,20px); font-weight:400; line-height:1.2; text-transform:uppercase; letter-spacing:.02em; opacity:.78; }
+    @media (max-width:768px) { .event-info__stats { grid-template-columns:repeat(2,1fr); } .event-info__stats .stat-num { font-size:clamp(18px,5vw,24px); } .event-info__stats .stat-label { font-size:12px; } }
+    .event-info--red { background:radial-gradient(circle at 88% 10%,#ff5147 0,transparent 31%),linear-gradient(135deg,#e30b08 0%,#a90308 100%); border-color:#5a090a; color:#1d0807; }.event-info--red .event-info__kicker { color:#4c1511; }.event-info--red .event-info__title { color:#1a0807; }.event-info--red .event-info__body { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); column-gap:clamp(22px,5vw,88px); row-gap:0; max-width:1080px; }.event-info--red .event-info__text { color:#210807; }.event-info--red .event-info__body .event-info__text:first-child { grid-column:1 / -1; max-width:980px; font-size:clamp(24px,2.55vw,39px); font-weight:700; line-height:1.16; letter-spacing:-.035em; }.event-info--red .event-info__body .event-info__text:nth-child(2),.event-info--red .event-info__body .event-info__text:nth-child(3) { color:#160706; font-size:clamp(21px,2.05vw,30px); font-weight:500; line-height:1.42; letter-spacing:-.005em; }.event-info--red .event-info__body .event-info__text:nth-child(2) { grid-column:1; }.event-info--red .event-info__body .event-info__text:nth-child(3) { grid-column:2; }.event-info--red .event-info__details { color:#31100d; }.event-info--event .event-info__body { display:grid; grid-template-columns:minmax(0,1.15fr) minmax(0,.85fr); column-gap:clamp(22px,5vw,88px); max-width:1120px; }.event-info--event .event-info__body .event-info__text:first-child { grid-column:1 / -1; max-width:900px; font-size:clamp(24px,2.5vw,38px); line-height:1.17; }.event-info--event .event-info__body .event-info__text:nth-child(2) { grid-column:1; }.event-info--event .event-info__body .event-info__text:nth-child(3) { grid-column:2; }.event-info__stats.event-info--taste { grid-template-columns:repeat(4,1fr); }.event-info__closing { grid-column:2; display:flex; align-items:flex-end; justify-content:space-between; gap:28px; margin-top:clamp(26px,4vw,48px); }.event-info__closing .event-info__details { margin:0; }.event-ticket-cta { position:relative; flex:0 0 auto; display:inline-flex; align-items:center; justify-content:center; min-width:178px; min-height:52px; padding:14px 22px; border:1px solid #ff6959; background:#e30b08; box-shadow:10px 10px 0 rgba(84,8,7,.78); color:#190706; font-family:Didot,"Bodoni MT",Georgia,serif; font-size:clamp(20px,2.6vw,30px); font-weight:700; letter-spacing:-.05em; line-height:.83; text-transform:none; cursor:pointer; overflow:hidden; opacity:0; transform:translateY(14px); clip-path:inset(0 100% 0 0); transition:clip-path .85s cubic-bezier(.76,0,.24,1),opacity .55s ease,transform .85s cubic-bezier(.16,1,.3,1),background .2s ease,box-shadow .2s ease; }.event-ticket-cta::before { content:''; position:absolute; z-index:0; inset:-30% auto -30% -38%; width:28%; background:rgba(255,237,223,.68); transform:skewX(-22deg) translateX(-360%); }.event-ticket-cta span { position:relative; z-index:1; opacity:0; transform:translateY(10px); transition:opacity .42s ease .3s,transform .7s cubic-bezier(.16,1,.3,1) .3s; }.event-ticket-cta.is-revealed { opacity:1; transform:translateY(0); clip-path:inset(0 0 0 0); }.event-ticket-cta.is-revealed span { opacity:1; transform:translateY(0); }.event-ticket-cta.is-revealed::before { animation:ticket-sheen 1.15s cubic-bezier(.76,0,.24,1) .22s both; }.event-ticket-cta:hover,.event-ticket-cta:focus-visible { background:#ff4b3d; box-shadow:4px 4px 0 rgba(84,8,7,.78); transform:translateY(-3px); outline:none; }.event-ticket-cta:active { transform:translateY(2px) scale(.98); box-shadow:1px 1px 0 rgba(84,8,7,.78); }
+    @media (max-width:768px) { .event-info--red .event-info__body,.event-info--event .event-info__body { grid-template-columns:1fr; }.event-info--red .event-info__body .event-info__text:first-child,.event-info--red .event-info__body .event-info__text:nth-child(2),.event-info--red .event-info__body .event-info__text:nth-child(3),.event-info--event .event-info__body .event-info__text:first-child,.event-info--event .event-info__body .event-info__text:nth-child(2),.event-info--event .event-info__body .event-info__text:nth-child(3) { grid-column:1; }.event-info--red .event-info__body .event-info__text:first-child,.event-info--event .event-info__body .event-info__text:first-child { font-size:clamp(22px,5.4vw,29px); }.event-info--red .event-info__body .event-info__text:nth-child(2),.event-info--red .event-info__body .event-info__text:nth-child(3) { font-size:clamp(20px,4.6vw,25px); font-weight:600; line-height:1.4; }.event-info__stats.event-info--taste { grid-template-columns:repeat(2,1fr); }.event-info__closing { align-items:flex-start; flex-direction:column; gap:20px; }.event-ticket-cta { min-width:0; width:100%; min-height:52px; } }
+
+    .site-footer { position:relative; padding:clamp(48px,8vw,110px) 8vw clamp(28px,4vw,58px); background:radial-gradient(circle at 86% 0%,rgba(209,16,13,.28),transparent 28%),#080808; color:#f4ebe5; border-top:1px solid #7a1714; }
+    .site-faq { padding-bottom:clamp(42px,7vw,88px); border-bottom:1px solid rgba(255,92,77,.28); }
+    .site-faq__eyebrow { margin:0 0 12px; color:#ff6959; font-size:12px; font-weight:900; letter-spacing:.14em; text-transform:uppercase; }.site-faq__title { margin:0 0 clamp(28px,5vw,56px); color:#ff4b3d; font-family:Didot,"Bodoni MT",Georgia,serif; font-size:clamp(54px,9vw,138px); font-weight:400; letter-spacing:-.075em; line-height:.8; text-transform:uppercase; }
+    .faq-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:0 clamp(28px,6vw,110px); }.faq-item { border-top:1px solid rgba(255,105,89,.32); }.faq-item:last-child { border-bottom:1px solid rgba(255,105,89,.32); }.faq-item summary { display:flex; align-items:center; justify-content:space-between; gap:18px; padding:22px 0; cursor:pointer; color:#fff4ee; font-size:clamp(17px,1.65vw,25px); line-height:1.12; list-style:none; }.faq-item summary::-webkit-details-marker { display:none; }.faq-item summary::after { content:'+'; flex:0 0 auto; color:#ff4b3d; font-size:32px; font-weight:300; line-height:.7; transition:transform .25s ease; }.faq-item[open] summary::after { transform:rotate(45deg); }.faq-item p { max-width:620px; margin:0; padding:0 0 22px; color:#f0b6a8; font-size:15px; line-height:1.5; }.faq-item a { color:#fff4ee; }
+    .legal-grid { display:grid; grid-template-columns:1fr 1fr 1.2fr; gap:clamp(28px,5vw,72px); padding:clamp(36px,6vw,76px) 0; border-bottom:1px solid rgba(255,92,77,.22); }
+    .legal-title { margin:0 0 12px; color:#ff6959; font-size:12px; font-weight:900; letter-spacing:.14em; text-transform:uppercase; }.legal-text,.legal-links { margin:0; color:#f0b6a8; font-size:14px; line-height:1.52; }.legal-links { display:grid; gap:8px; }.legal-grid a { color:#fff4ee; text-decoration:none; border-bottom:1px solid rgba(255,105,89,.52); width:max-content; max-width:100%; }.legal-grid a:hover { color:#ff6959; }
+    .footer-socials { display:flex; flex-wrap:wrap; gap:28px; justify-content:center; margin:clamp(30px,5vw,54px) 0 20px; }
+    .footer-social { display:grid; place-items:center; width:54px; height:54px; color:#f4ebe5; line-height:1; text-decoration:none; border:0; transition:color .2s,transform .2s; }
+    .footer-social:hover,.footer-social:focus-visible { color:#ff4b3d; transform:translateY(-4px) scale(1.08); outline:none; }.footer-social i { font-size:38px; }
+    .social-disclaimer { max-width:620px; margin:0 auto; color:#a79a93; font-size:11px; line-height:1.45; text-align:center; }
+    .developer-badge { display:block; width:max-content; max-width:100%; margin:clamp(26px,4vw,42px) auto 0; padding:0; color:rgba(255,105,89,.88); font-size:12px; font-weight:700; letter-spacing:.04em; line-height:1.2; text-align:center; text-decoration:underline; text-decoration-color:rgba(255,105,89,.36); text-underline-offset:3px; text-transform:none; }
+    @media (max-width:768px) { .site-brand{top:12px;font-size:22px}.tmenu-mobile{top:0;right:0}.site-menu{padding:92px 9vw 8vw}.site-footer{padding:50px 8vw 28px}.faq-grid,.legal-grid{grid-template-columns:1fr;gap:0}.site-faq__title{font-size:clamp(58px,18vw,84px)}.legal-grid{padding:38px 0}.developer-badge{font-size:9px} }
+    @media (max-width:768px) { .project-copy{padding:18% 4% max(11%,112px)}.project-title-negative{-webkit-mask-position:center 14svh;mask-position:center 14svh;-webkit-mask-size:92vw auto;mask-size:92vw auto}.project-title{font-size:clamp(48px,13vw,86px)}.project-subtitle{font-size:18px}.event-info{min-height:100svh;margin-top:0;padding:34px 8vw 38px;grid-template-columns:42px 1fr;gap:16px}.event-info__title{font-size:clamp(52px,15vw,80px)}.event-info--location .event-info__title{grid-column:1 / -1;font-size:clamp(46px,12.5vw,64px);overflow-wrap:anywhere}.event-info__text{font-size:clamp(18px,4.2vw,22px);line-height:1.35}.event-info__details{font-size:clamp(16px,3.8vw,20px)}
+      /* Третий блок: на телефоне одна центральная колонка без бокового отступа номера. */
+      .event-info#telegram{grid-template-columns:minmax(0,1fr);align-content:center;justify-items:center;gap:0;padding:52px 24px 44px;text-align:center;overflow-x:hidden}
+      .event-info#telegram .event-info__number,.event-info#telegram .event-info__kicker,.event-info#telegram .event-info__title,.event-info#telegram .event-info__body,.event-info#telegram .event-info__closing{grid-column:1;width:min(100%,440px)}
+      .event-info#telegram .event-info__number{margin:0 0 18px}
+      .event-info#telegram .event-info__kicker{font-size:13px;line-height:1.25}
+      .event-info#telegram .event-info__title{margin:20px 0 0;font-size:clamp(48px,14vw,68px);line-height:.84}
+      .event-info#telegram .event-info__body{margin:0}.event-info#telegram .event-info__text{margin-top:22px;font-size:clamp(18px,4.8vw,22px);line-height:1.35}
+      .event-info#telegram .event-info__closing{align-items:stretch;margin-top:30px}.event-info#telegram .event-info__details{display:none}.event-info#telegram .event-ticket-cta{box-sizing:border-box;width:100%;max-width:100%;min-height:68px;padding:16px 68px 17px 22px;border-color:rgba(255,105,89,.78);background:linear-gradient(115deg,rgba(191,18,18,.22),transparent 46%),rgba(15,10,10,.91);box-shadow:0 18px 52px rgba(0,0,0,.46),inset 0 0 0 1px rgba(255,255,255,.035);color:#fff4ee;text-align:left}.event-info#telegram .event-ticket-cta::before{inset:0 auto 0 0;width:4px;background:#e30b08;box-shadow:0 0 24px rgba(227,11,8,.64);transform:none;animation:none!important}.event-info#telegram .event-ticket-cta::after{content:'→';position:absolute;right:17px;top:50%;display:grid;place-items:center;width:38px;height:38px;border:1px solid rgba(255,105,89,.58);background:rgba(227,11,8,.12);color:#fff4ee;font-family:Arial,sans-serif;font-size:23px;font-weight:400;line-height:1;transform:translateY(-50%);transition:background .24s ease,border-color .24s ease,transform .34s cubic-bezier(.16,1,.3,1)}.event-info#telegram .event-ticket-cta:hover,.event-info#telegram .event-ticket-cta:focus-visible{background:linear-gradient(115deg,rgba(227,11,8,.34),transparent 52%),rgba(18,10,10,.96);border-color:#ff6959;box-shadow:0 22px 62px rgba(0,0,0,.56),0 0 0 1px rgba(255,105,89,.14);color:#fff;transform:translateY(-3px)}.event-info#telegram .event-ticket-cta:hover::after,.event-info#telegram .event-ticket-cta:focus-visible::after{border-color:#ff6959;background:#e30b08;transform:translate(4px,-50%)}
+      /* Локация: на узком экране название остаётся двумя целыми строками и не уезжает вниз. */
+      .event-info--location{grid-template-columns:minmax(0,1fr);align-content:center;justify-items:center;gap:0;padding:48px 22px 42px;text-align:center;overflow-x:hidden}
+      .event-info--location .event-info__number,.event-info--location .event-info__kicker,.event-info--location .event-info__title,.event-info--location .event-info__text,.event-info--location .event-info__details{grid-column:1;width:100%;max-width:440px}
+      .event-info--location .event-info__number{margin:0 0 16px}.event-info--location .event-info__kicker{font-size:13px}.event-info--location .event-info__title{margin:20px 0 0;font-size:clamp(38px,11vw,50px);letter-spacing:-.075em;line-height:.86;white-space:nowrap;overflow-wrap:normal}.event-info--location .event-info__text{margin-top:28px;font-size:clamp(17px,4.5vw,21px)}.event-info--location .event-info__details{margin-top:26px;font-size:clamp(15px,3.9vw,18px)}
+    }
+    @media (prefers-reduced-motion:reduce) { .project-media{clip-path:none;transform:none;filter:none}.project-media img{transform:none}.project-copy{transform:none;opacity:1}.site-menu,.site-menu::before,.site-menu::after,.site-menu a,.t-menuburger span,.hero-kicker,.hero-scroll-cue,.hero-scroll-cue::before,.hero-scroll-cue::after,.ticket-float,.ticket-float::before,.ticket-float>*,.curtain,.ticket-modal,.ticket-modal__panel{transition:none!important;animation:none!important;filter:none}.ticket-modal__panel{transform:none!important;filter:none!important}.event-ticket-cta{opacity:1!important;transform:none!important;clip-path:none!important}.event-ticket-cta span{opacity:1!important;transform:none!important} }
+    body.menu-open { overflow:hidden; } body.ticket-open { overflow:hidden; }
+    article[hidden] { display:none !important; }
+
+  
+    /* Афиша полностью видна на телефоне и компьютере без обрезки. */
+    .project-card .project-media img.project-pika-poster { object-fit:contain; object-position:center; transform:none; }
+    /* Только афиша Пики: естественная прокрутка, без масштаба и смещения. */
+    .project-stage--pika { height:auto; }
+    .project-stage--pika .project-card { position:relative; top:auto; height:min(125vw, 100svh); }
+    .project-stage--pika .project-media { width:100%; height:100%; transform:none; }
+
+</style>
+  <noscript><style>
+    /* Без JS шторы и intro не запускаются: слово-герой обязано остаться видимым. */
+    .curtain { display:none !important; }
+    #bgvid { display:none; }
+    #overlay-container { opacity:1; }
+    .hero-kicker { opacity:.96; filter:none; transform:translate(-50%,0) rotate(0); }
+    .hero-scroll-cue, .tmenu-mobile { display:none !important; }
+    .site-brand { opacity:.98; pointer-events:auto; }
+  </style></noscript>
+
+<!-- Yandex.Metrika counter -->
+<script type="text/javascript">
+    (function(m,e,t,r,i,k,a){
+        m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+        m[i].l=1*new Date();
+        for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}
+        k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)
+    })(window, document,'script','https://mc.yandex.ru/metrika/tag.js?id=109054298', 'ym');
+
+    ym(109054298, 'init', {ssr:true, webvisor:true, clickmap:true, ecommerce:"dataLayer", referrer: document.referrer, url: location.href, accurateTrackBounce:true, trackLinks:true});
+</script>
+<noscript><div><img src="https://mc.yandex.ru/watch/109054298" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
+<!-- /Yandex.Metrika counter -->
+</head>
+<body>
+  <a class="site-brand" id="siteBrand" href="./" aria-label="Кастом — главная">custom</a>
+  <div class="tmenu-mobile" id="mobileMenuBar">
+    <div class="tmenu-mobile__container">
+      <button class="t-menuburger t-menuburger_second" id="menuTrigger" type="button" aria-label="Навигационное меню" aria-expanded="false"><span></span><span></span><span></span><span></span></button>
+    </div>
+  </div>
+  <nav class="site-menu" id="siteMenu" aria-hidden="true">
+    <a class="nav-link" style="--i:0" href="./"><span class="nav-index">01</span><span>Главная</span></a>
+    <a class="nav-link" style="--i:1" href="past-events.html"><span class="nav-index">02</span><span>События: сейчас и в истории</span></a>
+    <a class="nav-link" style="--i:2" href="#telegram"><span class="nav-index">03</span><span>Скидка в Telegram</span></a>
+    <a class="nav-link" style="--i:3" href="shop.html"><span class="nav-index">04</span><span>Магазин</span></a>
+    <a class="nav-link" style="--i:4" href="#faq"><span class="nav-index">05</span><span>FAQ</span></a>
+    <button style="--i:5" type="button" class="nav-menu-buy" id="ticketOpen" data-ticket-open data-ticket-url="https://voroh.ru/widget/event/1043748/01a17876-e4b4-8c39-9c9a-f002803f071c/" data-ticket-title="CUSTOM × Вкусы Казани · 20 ноября">Купить билет на 20 ноября</button>
+    <div class="menu-socials" aria-label="Социальные сети">
+      <a href="https://t.me/custom_843" target="_blank" rel="noopener" class="menu-social" aria-label="Telegram"><i class="fa-brands fa-telegram"></i></a>
+      <a href="https://www.instagram.com/custom.843?igsh=MW56eTl0b2FhZ203OQ==" target="_blank" rel="noopener" class="menu-social" aria-label="Instagram"><i class="fa-brands fa-instagram"></i></a>
+      <a href="https://vk.ru/custom843.kazan" target="_blank" rel="noopener" class="menu-social" aria-label="VK"><i class="fa-brands fa-vk"></i></a>
+      <a href="https://www.tiktok.com/@custom_843?_r=1&_t=ZS-96UOwNMbkpg" target="_blank" rel="noopener" class="menu-social" aria-label="TikTok"><i class="fa-brands fa-tiktok"></i></a>
+    </div>
+  </nav>
+
+  <section class="ticket-modal" id="ticketModal" aria-hidden="true" aria-labelledby="ticketTitle" role="dialog" aria-modal="true">
+    <div class="ticket-modal__panel">
+      <header class="ticket-modal__head"><div><p class="ticket-modal__eyebrow">Билеты · 20 ноября</p><h2 class="ticket-modal__title" id="ticketTitle">CUSTOM × Вкусы Казани</h2></div><button class="ticket-modal__close" id="ticketClose" type="button" aria-label="Закрыть покупку билета">×</button></header>
+      <div class="ticket-modal__body"><div class="widget-inner-iframe"><iframe class="widget-tabs__iframe" referrerpolicy="same-origin" data-analytic="iframe" frameborder="0" id="widget-iframe" src="https://voroh.ru/widget/event/1043748/01a17876-e4b4-8c39-9c9a-f002803f071c/" sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-downloads allow-popups-to-escape-sandbox" allow="clipboard-write" title="Покупка билетов"></iframe></div></div>
+    </div>
+  </section>
+
+  <div class="curtain left"></div><div class="curtain right"></div>
+  <main id="video-wrapper">
+    <picture>
+      <source media="(max-width: 768px)" srcset="assets/custom/hero-kazan-mobile.webp">
+      <img id="bgfallback" src="assets/custom/hero-kazan-desktop.webp" alt="CUSTOM × Вкусы Казани: 20 ноября, «КОРСТОН», 3 этаж, ул. Н.Ершова, д.1">
+    </picture>
+    <div id="overlay-container"></div>
+    <div class="hero-lockup">
+      <p class="hero-kicker hero-kicker--top">20 ноября · Казань · 22:22</p>
+      <p class="hero-kicker hero-kicker--bottom">CUSTOM × Вкусы Казани</p>
+    </div>
+    <button class="hero-scroll-cue" id="heroScrollCue" type="button" aria-label="Перейти к истории события"></button>
+    <button class="hero-event-link" id="heroEventLink" type="button">Узнать о событии</button>
+  </main>
+    <button class="ticket-float" type="button" data-ticket-open data-ticket-url="https://voroh.ru/widget/event/1043748/01a17876-e4b4-8c39-9c9a-f002803f071c/" data-ticket-title="CUSTOM × Вкусы Казани" aria-label="Открыть покупку билета на CUSTOM × Вкусы Казани"><span class="ticket-float__eyebrow">20.11 · «КОРСТОН», ул. Н.Ершова, д.1</span><span class="ticket-float__label">Купить билет</span></button>
+
+  <section class="projects" aria-label="Кастом проекты">
+    <!-- БЛИЖАЙШЕЕ СОБЫТИЕ — первый блок после hero -->
+        <!-- БЛИЖАЙШЕЕ СОБЫТИЕ -->
+<article class="event-info event-info--event" id="august-event" hidden>
+      <span class="event-info__number">01</span>
+      <p class="event-info__kicker">20 ноября / «КОРСТОН», 3 этаж</p>
+      <h2 class="event-info__title">CUSTOM ×<br>Вкусы<br>Казани</h2>
+      <div class="event-info__body">
+        <p class="event-info__text">20 ноября забираем «КОРСТОН» под свой ритм. От заката до рассвета — музыка, разговоры, танцы и длинная ночь в центре Казани.</p>
+        <p class="event-info__text">Во дворе будут теннис, бирпонг и коктейли — чтобы не выбирать между «просто посидеть» и «идти танцевать». Можно прийти компанией, собрать новую или потеряться в лайнапе и вернуться к своим уже под утро.</p>
+        <p class="event-info__text">За музыку отвечают резиденты Кастом и специальный гость. Это не концерт с паузами между пунктами программы, а один живой вечер: у него есть старт, разгон и момент, когда никто уже не смотрит на время.</p>
+      </div>
+      <div class="event-info__stats" id="program">
+        <div class="stat"><span class="stat-num">20.11</span><span class="stat-label">Пятница</span></div>
+        <div class="stat"><span class="stat-num">22:22</span><span class="stat-label">Начинаем</span></div>
+        <div class="stat"><span class="stat-num">06:00</span><span class="stat-label">Финишируем</span></div>
+        <div class="stat"><span class="stat-num">«КОРСТОН»</span><span class="stat-label">3 этаж · ул. Н.Ершова, д.1</span></div>
+      </div>
+      <div class="event-info__closing">
+        <p class="event-info__details">18+ · Фейс-контроль / Дресс-код · Дресс-код — твой лучший аутфит.</p>
+        <button type="button" class="event-ticket-cta is-revealed" data-ticket-open data-ticket-url="https://voroh.ru/widget/event/1043748/01a17876-e4b4-8c39-9c9a-f002803f071c/" data-ticket-title="CUSTOM × Вкусы Казани"><span>Купить билет</span></button>
+      </div>
+    </article>
+
+    <!-- СЛЕДУЮЩЕЕ СОБЫТИЕ -->
+    <article class="event-info event-info--event" id="event">
+      <span class="event-info__number">01</span>
+      <p class="event-info__kicker">20 ноября / «КОРСТОН», 3 этаж</p>
+      <div class="event-info__body">
+        <p class="event-info__text">Помнишь, как всё было? Когда ты листал «сохраненки» в ВК в три часа ночи, крутил в руках спиннер и слушал ЛСП или Pharaoh на повторе. Время, когда малиновые закаты были фоном для твоих фотографий, а на тусовки ты надевал скинни, оверсайз и доставал свои Vans.</p>
+        <p class="event-info__text">С тех пор прошло почти 10 лет. Мы выросли, но эта эстетика и излюбленные треки, которые мы слушаем до сих пор, зная каждое слово, никуда не ушли.</p>
+      </div>
+      <div class="event-info__stats event-info--taste">
+        <div class="stat"><span class="stat-num">20.11</span><span class="stat-label">Пятница</span></div>
+        <div class="stat"><span class="stat-num">22:22—06:00</span><span class="stat-label">Ночной опен-эйр</span></div>
+        <div class="stat"><span class="stat-num">«КОРСТОН»</span><span class="stat-label">3 этаж · ул. Н.Ершова, д.1</span></div>
+      </div>
+      <div class="event-info__closing">
+        <p class="event-info__details">18+ · FC/DC · «КОРСТОН», 3 этаж, ул. Н.Ершова, д.1</p>
+        <button type="button" class="event-ticket-cta is-revealed" data-ticket-open data-ticket-url="https://voroh.ru/widget/event/1043748/01a17876-e4b4-8c39-9c9a-f002803f071c/" data-ticket-title="CUSTOM × Вкусы Казани"><span>Купить билет</span></button>
+      </div>
+    </article>
+
+    <!-- ПРЕДЫДУЩЕЕ СОБЫТИЕ -->
+        <!-- КОМАНДА — третий блок -->
+    <article class="event-info event-info--red" id="team">
+      <span class="event-info__number">02</span>
+      <p class="event-info__kicker">Казань / с 2020</p>
+      <h2 class="event-info__title">Кастом</h2>
+      <div class="event-info__body">
+        <p class="event-info__text">Кастом — команда из Казани, которая собирает вечера вокруг хип-хопа, R&amp;B и танца. Не просто ставит музыку, а придумывает, как человек проживёт ночь: кого встретит у входа, на каком треке выйдет на танцпол и с каким настроением уедет домой.</p>
+        <p class="event-info__text">Для нас площадка — часть лайнапа. Свет, звук, бар, люди, визуал и темп вечера работают вместе: можно прийти за любимыми треками, случайно познакомиться с кем-то у стойки и остаться до последнего сета.</p>
+        <p class="event-info__text">Мы не делаем «для галочки» и не пытаемся понравиться всем. Собираем своих — тех, кому важны отборная музыка, свобода в одежде и ощущение, что город на одну ночь стал чуть живее.</p>
+      </div>
+    </article>
+    <article class="event-info event-info--red" id="telegram">
+      <span class="event-info__number">03</span>
+      <p class="event-info__kicker">Свой круг / 10% на первый билет</p>
+      <h2 class="event-info__title">Залетай<br>в Telegram</h2>
+      <div class="event-info__body"><p class="event-info__text">Не ждём, пока афиша сама найдёт тебя. В боте — ранние анонсы, свои промокоды и десять процентов на первый билет.</p><p class="event-info__text">Покажи, что ты с нами до того, как станет шумно.</p></div>
+      <div class="event-info__closing"><a class="event-ticket-cta is-revealed" href="https://t.me/custom843bot?start=site" target="_blank" rel="noopener"><span>Забрать скидку</span></a></div>
+    </article>
+    <div class="project-stage project-stage--pika"><article class="project-card" data-project><figure class="project-media"><img class="project-pika-poster" src="assets/custom/pika-2017-nov20-20261105.webp" alt="Афиша вечеринки «Назад в 2017»: специальный гость Пика, 20 ноября" loading="lazy"><div class="project-copy" aria-hidden="true"></div></figure></article></div>
+    
+    <!-- ЛОКАЦИЯ — четвёртый блок -->
+    <article class="event-info event-info--location">
+      <span class="event-info__number">04</span>
+      <p class="event-info__kicker">Точка сбора</p>
+      <h2 class="event-info__title">«КОРСТОН»,<br>3 этаж</h2>
+      <p class="event-info__text">В прошлый раз мы собрали больше 1200+ человек и не смогли вместить всех желающих. Многие просили повторить вечеринку — и тогда мы поняли: нам не подходит маленькая площадка. Мы искали место, которое сможет вместить всех, кто хочет вернуться в то время. И нашли.</p>
+      <p class="event-info__details">«КОРСТОН», 3 этаж · Drink Mall, ул. Н.Ершова, д.1, Казань<br>20 ноября 2026 · 22:22–06:00</p>
+    </article>
+    <div class="project-stage"><article class="project-card" data-project><figure class="project-media"><img src="assets/custom/live-indoor.jpg" alt="Выступление на сцене" loading="lazy"><div class="project-title-negative project-title-negative--live" aria-hidden="true"><img src="assets/custom/live-indoor.jpg" alt="" loading="lazy"></div><div class="project-copy"><h2 class="project-title">Живой<br>звук</h2><p class="project-subtitle">Кастом</p></div></figure></article></div>
+  </section>
+
+  <footer class="site-footer">
+    <section class="site-faq" id="faq" aria-labelledby="faq-title">
+      <p class="site-faq__eyebrow">FAQ</p>
+      <h2 class="site-faq__title" id="faq-title">Вопросы<br>и ответы</h2>
+      <div class="faq-grid">
+        <details class="faq-item"><summary>Как часто проводите мероприятия?</summary><p>Собираемся регулярно — следи за анонсами в Telegram и Instagram. Обычно несколько событий в месяц, летом чаще.</p></details>
+        <details class="faq-item"><summary>Где проходят события?</summary><p>Ближайшее — в «КОРСТОН», 3 этаж, ул. Н.Ершова, д.1. Остальные локации анонсируем заранее в соцсетях.</p></details>
+        <details class="faq-item"><summary>Как купить билет?</summary><p>Только через официальный билетный оператор. Кнопка «Купить билет» на сайте ведёт в защищённый виджет покупки.</p></details>
+        <details class="faq-item"><summary>Есть ли возрастное ограничение?</summary><p>Да, событие <strong>18+</strong>. На входе могут попросить оригинал документа, подтверждающего возраст.</p></details>
+        <details class="faq-item"><summary>Как вернуть билет?</summary><p>Возврат оформляется через интерфейс или поддержку билетного оператора в порядке, предусмотренном законодательством РФ и условиями продажи.</p></details>
+        <details class="faq-item"><summary>Какой дресс-код?</summary>
+          <p><strong>ДРЕСС-КОД 2К17</strong></p>
+          <p><strong>ДЛЯ ПАРНЕЙ</strong><br>Скинни с подворотами. Оверсайз-худи — Supreme, Thrasher, Champion. Массивные Vans или кеды. Кепка, цепь, сумка через плечо. North Face, конечно же.<br>Вспоминай, как одевался в 2017-м.</p>
+          <p><strong>ДЛЯ ДЕВУШЕК</strong><br>Кроп-топ или короткая футболка. Скинни, из-под которых видно сетку. Оверсайз-худи. Чокер. Кроссовки на толстой подошве. Тот самый вайб «винишко-тян». Ты знаешь.</p>
+          <p><strong>ГЛАВНОЕ:</strong> никаких строгих правил. Просто вернись в 2017-й. Вспомни, что носил. Надень это снова!</p>
+        </details>
+      </div>
+    </section>
+    <div class="legal-grid">
+      <div><p class="legal-title">Организатор</p><p class="legal-text">Организатор: <strong>КАСТОМ</strong><br>ИНН: <strong>165710447869</strong><br>Контакты: <a href="mailto:info@custom843.ru">info@custom843.ru</a></p></div>
+      <div><p class="legal-title">Документы</p><nav class="legal-links" aria-label="Правовые документы"><a href="./offer.html" target="_blank" rel="noopener">Публичная оферта</a><a href="./rules.html" target="_blank" rel="noopener">Правила посещения</a><a href="./refund.html" target="_blank" rel="noopener">Условия возврата</a><a href="./privacy-policy.html" target="_blank" rel="noopener">Политика обработки персональных данных</a><a href="./cookie-policy.html" target="_blank" rel="noopener">Политика cookies</a></nav></div>
+      <div><p class="legal-title">Вход и данные</p><p class="legal-text">Мероприятие 18+. На входе может проверяться возраст по оригиналу документа без копирования паспортных данных. Организатор не обрабатывает полные данные банковских карт.</p></div>
+    </div>
+    <div class="footer-socials" aria-label="Мы в социальных сетях">
+      <a href="https://t.me/custom_843" target="_blank" rel="noopener" class="footer-social" aria-label="Telegram"><i class="fa-brands fa-telegram"></i></a>
+      <a href="https://www.instagram.com/custom.843?igsh=MW56eTl0b2FhZ203OQ==" target="_blank" rel="noopener" class="footer-social" aria-label="Instagram"><i class="fa-brands fa-instagram"></i></a>
+      <a href="https://vk.ru/custom843.kazan" target="_blank" rel="noopener" class="footer-social" aria-label="VK"><i class="fa-brands fa-vk"></i></a>
+      <a href="https://www.tiktok.com/@custom_843?_r=1&_t=ZS-96UOwNMbkpg" target="_blank" rel="noopener" class="footer-social" aria-label="TikTok"><i class="fa-brands fa-tiktok"></i></a>
+    </div>
+    <p class="social-disclaimer">Instagram принадлежит Meta, признанной экстремистской организацией и запрещённой в Российской Федерации.</p>
+    <a class="developer-badge" href="https://t.me/bugaev_space" target="_blank" rel="noopener">Создать такой же сайт</a>
+  </footer>
+  <aside class="cookie-note" id="cookieNote" aria-label="Уведомление о cookies" hidden>
+    <p class="cookie-note__text">Мы используем cookies, чтобы сайт работал стабильно. <a href="./cookie-policy.html" target="_blank" rel="noopener">Подробнее</a></p>
+    <div class="cookie-note__actions"><span class="cookie-note__label">Всё ок?</span><button class="cookie-note__accept" id="cookieAccept" type="button">Понятно</button></div>
+  </aside>
+  <script>
+    const overlay=document.getElementById('overlay-container');
+        const menuTrigger=document.getElementById('menuTrigger'), menu=document.getElementById('siteMenu'), mobileMenuBar=document.getElementById('mobileMenuBar'), siteBrand=document.getElementById('siteBrand'), bgfallback=document.getElementById('bgfallback');
+    let projectRevealsStarted=false, overlayRevealed=false;
+        function revealVideoOverlay() {
+      if (overlayRevealed) return;
+      overlayRevealed=true;
+      setTimeout(()=>{ overlay.style.opacity='1'; },1500);
+    }
+    function startBackgroundVideo() { revealVideoOverlay(); setTimeout(launchSite,120); }
+    window.addEventListener('pageshow', startBackgroundVideo);
+    setTimeout(startBackgroundVideo, 180);
+    function startProjectReveals() {
+      if (projectRevealsStarted) return;
+      projectRevealsStarted=true;
+      const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const states=[...document.querySelectorAll('[data-project]')].map(card=>({card,stage:card.closest('.project-stage'),current:0,target:0}));
+      if (prefersReducedMotion) {
+        states.forEach(state => {
+          state.card.style.setProperty('--reveal', '1');
+          state.card.style.setProperty('--copy', '1');
+        });
+        return;
+      }
+      let lastT = performance.now(), running = false;
+      function tick(now) {
+        const dt = Math.min(64, now - lastT) / 1000;
+        lastT = now;
+        const ease = 1 - Math.pow(0.0009, dt);
+        states.forEach(state => {
+          const rect = state.stage.getBoundingClientRect();
+          const travel = state.stage.offsetHeight - window.innerHeight;
+          const vh = window.innerHeight;
+          const raw = travel <= 1
+            ? (rect.top < vh * 0.65 ? 1 : 0)
+            : Math.max(0, Math.min(1, (vh * 0.65 - rect.top) / (vh * 0.65 + travel * 0.5)));
+          state.target = raw;
+          const revealEase = state.stage.classList.contains('project-stage--pika') ? 1 - Math.pow(0.12, dt) : ease;
+          state.current += (state.target - state.current) * revealEase;
+          if (Math.abs(state.target - state.current) < 0.0012) state.current = state.target;
+          const copy = Math.max(0, Math.min(1, (state.current - 0.34) / 0.5));
+          state.card.style.setProperty('--reveal', state.current.toFixed(4));
+          state.card.style.setProperty('--copy', copy.toFixed(4));
+        });
+        const allSettled = states.every(s => Math.abs(s.target - s.current) < 0.002);
+        if (allSettled) { running = false; return; }
+        requestAnimationFrame(tick);
+      }
+      function kick() {
+        if (!running) { running = true; lastT = performance.now(); requestAnimationFrame(tick); }
+      }
+      window.addEventListener('scroll', kick, { passive: true });
+      window.addEventListener('resize', kick);
+      kick();
+    }
+    function launchSite() {
+      if (document.body.classList.contains('video-started')) return;
+      // Единственный стартовый экран — две шторы. Никакой плашки и никакого клика поверх видео.
+      document.body.classList.add('video-started');
+      mobileMenuBar.classList.add('is-visible');
+      siteBrand.classList.add('is-visible');
+      startProjectReveals();
+      // Additional early retries cover Telegram's delayed media attachment on first navigation.
+      setTimeout(startBackgroundVideo,250);
+      setTimeout(startBackgroundVideo,1000);
+    }
+    // Шторы открываем немедленно — не ждём успешного play(). Яндекс/low-power-mode могут молча блокировать autoplay.
+    const scheduleStart=()=>{ startBackgroundVideo(); setTimeout(launchSite,80); };
+    if (document.readyState==='loading') document.addEventListener('DOMContentLoaded',scheduleStart,{once:true});
+    else scheduleStart();
+    const toggleMenu=forceOpen=>{ const open=forceOpen ?? menuTrigger.getAttribute('aria-expanded')!=='true'; menuTrigger.setAttribute('aria-expanded',String(open)); menu.classList.toggle('is-open',open); menu.setAttribute('aria-hidden',String(!open)); document.body.classList.toggle('menu-open',open); };
+    menuTrigger.addEventListener('click',()=>toggleMenu());
+    menu.querySelectorAll('a').forEach(link=>{ link.addEventListener('click',()=>toggleMenu(false)); });
+
+    const ticketModal=document.getElementById('ticketModal'), ticketOpens=document.querySelectorAll('[data-ticket-open]'), ticketClose=document.getElementById('ticketClose'), ticketFrame=document.getElementById('widget-iframe'), heroScrollCue=document.getElementById('heroScrollCue'), heroEventLink=document.getElementById('heroEventLink'), ticketFloat=document.querySelector('.ticket-float');
+    const TICKET_URL='https://voroh.ru/widget/event/1043748/01a17876-e4b4-8c39-9c9a-f002803f071c/';
+    let ticketFocusReturn=null;
+    function setTicketModal(open, trigger) {
+      if (!ticketModal) return;
+      if (open) {
+        ticketFocusReturn=trigger || document.activeElement;
+        if (ticketFrame) {
+          const endpoint=trigger?.dataset?.ticketUrl || (ticketFrame.dataset && ticketFrame.dataset.src) || TICKET_URL;
+          const title=trigger?.dataset?.ticketTitle;
+          if (title) document.getElementById('ticketTitle').textContent=title;
+          if (endpoint && ticketFrame.getAttribute('src')!==endpoint) ticketFrame.src=endpoint;
+        }
+        if (typeof toggleMenu==='function') toggleMenu(false);
+        ticketModal.classList.add('is-open'); ticketModal.setAttribute('aria-hidden','false'); document.body.classList.add('ticket-open');
+        ticketClose?.focus?.();
+      } else {
+        ticketModal.classList.remove('is-open'); ticketModal.setAttribute('aria-hidden','true'); document.body.classList.remove('ticket-open');
+        ticketFocusReturn?.focus?.();
+      }
+    }
+    ticketOpens.forEach(button=>{ if(!button) return; button.addEventListener('click',()=>setTicketModal(true,button)); });
+    ticketClose?.addEventListener('click',()=>setTicketModal(false));
+    ticketModal?.addEventListener('click',event=>{ if(event.target===ticketModal) setTicketModal(false); });
+
+    const ticketCta=document.querySelector('.event-ticket-cta');
+    if ('IntersectionObserver' in window && ticketCta) {
+      const ctaReveal=new IntersectionObserver(entries=>{
+        entries.forEach(entry=>{
+          if (entry.isIntersecting) { ticketCta.classList.add('is-revealed'); ctaReveal.unobserve(ticketCta); }
+        });
+      }, { threshold:0.05, rootMargin:'0px 0px -5% 0px' });
+      ctaReveal.observe(ticketCta);
+    } else if (ticketCta) {
+      ticketCta.classList.add('is-revealed');
+    }
+
+    const siteFooter=document.querySelector('.site-footer');
+    if ('IntersectionObserver' in window && ticketFloat && siteFooter) {
+      const footerDock=new IntersectionObserver(entries=>{
+        entries.forEach(entry=>{
+          ticketFloat.classList.toggle('is-docked', entry.isIntersecting && entry.intersectionRatio>0);
+        });
+      }, { threshold:[0, 0.06, 0.18, 0.36], rootMargin:'0px 0px 40% 0px' });
+      footerDock.observe(siteFooter);
+    }
+    function updateHeroActions() {
+      const pastHero=window.scrollY>window.innerHeight*.28;
+      // Always show ticket CTA - user should see it immediately, not after scrolling
+      document.body.classList.add('show-ticket-float');
+      heroScrollCue?.classList.toggle('is-past',pastHero);
+    }
+    window.addEventListener('scroll',updateHeroActions,{passive:true}); updateHeroActions();
+    heroScrollCue?.addEventListener('click',()=>document.querySelector('#event')?.scrollIntoView({behavior:'smooth',block:'start'}));
+    heroEventLink?.addEventListener('click',()=>document.querySelector('#event')?.scrollIntoView({behavior:'smooth',block:'start'}));
+
+    const cookieNote=document.getElementById('cookieNote'), cookieAccept=document.getElementById('cookieAccept'), cookieKey='custom843_cookie_seen';
+    try { if (!localStorage.getItem(cookieKey)) { cookieNote.hidden=false; document.body.classList.add('cookie-visible'); } } catch (_) { cookieNote.hidden=false; document.body.classList.add('cookie-visible'); }
+    cookieAccept?.addEventListener('click',()=>{ try { localStorage.setItem(cookieKey,'1'); } catch (_) {} cookieNote.hidden=true; document.body.classList.remove('cookie-visible'); });
+
+    document.addEventListener('keydown',event=>{ if(event.key!=='Escape') return; if(ticketModal?.classList.contains('is-open')) setTicketModal(false); else if(menuTrigger?.getAttribute('aria-expanded')==='true') toggleMenu(false); });
+  </script>
+</body>
+</html>
