@@ -203,6 +203,8 @@
     .upcoming-card { min-width:0; display:flex; flex-direction:column; background:#17100f; border:1px solid #51302d; }
     .upcoming-card__visual { position:relative; aspect-ratio:1.7; overflow:hidden; background:#210b0a; }
     .upcoming-card__visual img { width:100%; height:100%; display:block; object-fit:cover; object-position:center; }
+    .upcoming-card__visual--ufa-hd { background:#1a0b11; display:flex; align-items:center; }
+    .upcoming-card__visual--ufa-hd img { width:100%; height:auto; object-fit:contain; }
     .upcoming-card__visual--ufa { display:flex; flex-direction:column; justify-content:space-between; padding:clamp(20px,3vw,42px); background:radial-gradient(circle at 80% 25%,#a41f19 0,transparent 42%),linear-gradient(135deg,#4a0b09,#140a0a 75%); }
     .upcoming-card__visual--ufa::after { content:'УФА'; position:absolute; right:-.03em; bottom:-.15em; color:rgba(255,105,89,.15); font-family:Didot,"Bodoni MT",Georgia,serif; font-size:clamp(100px,18vw,250px); letter-spacing:-.09em; line-height:.8; }
     .upcoming-card__stamp { position:relative; z-index:1; color:#ffe2d9; font-size:12px; letter-spacing:.18em; text-transform:uppercase; }
@@ -292,7 +294,7 @@
         <div class="upcoming-card__body"><p class="upcoming-card__meta">20 ноября / «КОРСТОН», 3 этаж</p><h3 class="upcoming-card__city">Казань</h3><p class="upcoming-card__desc">CUSTOM × Вкусы Казани</p><a class="upcoming-card__link" href="#event">Подробнее о событии</a></div>
       </article>
       <article class="upcoming-card">
-        <div class="upcoming-card__visual"><img src="assets/custom/ufa-2k17-preview.webp?v=1" alt="Фрагмент афиши Кастом 2К17" loading="lazy" width="1305" height="705"></div>
+        <div class="upcoming-card__visual upcoming-card__visual--ufa-hd"><img src="assets/custom/ufa-2k17-hd.webp?v=2" alt="Афиша Кастом 2К17" loading="lazy" width="2700" height="420"></div>
     <div class="upcoming-card__body"><p class="upcoming-card__meta">21 ноября / «Истина», ул. Комсомольская, 2</p><h3 class="upcoming-card__city">Уфа</h3><p class="upcoming-card__desc">КАСТОМ 2К17 · 22:00–06:00</p><a class="upcoming-card__link" href="#ufa-event">Подробнее о событии</a></div>
       </article>
     </div>
