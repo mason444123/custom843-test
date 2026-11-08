@@ -194,6 +194,7 @@
 
     /* Staging: event selector, kept separate from the existing event content. */
     .upcoming { position:relative; padding:clamp(58px,8vw,118px) clamp(20px,8vw,130px) clamp(88px,10vw,145px); background:#0b0a0a; color:#f4ebe5; }
+    body.upcoming-visible .ticket-float { opacity:0!important; pointer-events:none!important; }
     .upcoming__header { display:flex; justify-content:space-between; align-items:end; gap:20px; padding-bottom:28px; border-bottom:1px solid #74403b; }
     .upcoming__label { margin:0 0 16px; color:#ff6959; font-size:12px; letter-spacing:.18em; text-transform:uppercase; }
     .upcoming__title { margin:0; font-family:Didot,"Bodoni MT",Georgia,serif; font-size:clamp(48px,7vw,98px); font-weight:400; line-height:.92; letter-spacing:-.055em; text-transform:uppercase; }
@@ -535,6 +536,14 @@
       heroScrollCue?.classList.toggle('is-past',pastHero);
     }
     window.addEventListener('scroll',updateHeroActions,{passive:true}); updateHeroActions();
+    const upcomingSection=document.getElementById('upcoming');
+    function syncUpcomingVisibility() {
+      const rect=upcomingSection.getBoundingClientRect();
+      document.body.classList.toggle('upcoming-visible',rect.top < window.innerHeight && rect.bottom > 0);
+    }
+    window.addEventListener('scroll',syncUpcomingVisibility,{passive:true});
+    window.addEventListener('resize',syncUpcomingVisibility);
+    syncUpcomingVisibility();
     heroScrollCue?.addEventListener('click',()=>document.querySelector('#event')?.scrollIntoView({behavior:'smooth',block:'start'}));
     heroEventLink?.addEventListener('click',()=>document.querySelector('#event')?.scrollIntoView({behavior:'smooth',block:'start'}));
 
