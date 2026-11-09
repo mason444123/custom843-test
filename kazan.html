@@ -59,23 +59,12 @@
       <p class="ev-tickets__eyebrow">Билеты · 20 ноября</p>
       <h2 class="ev-tickets__title" id="tickets-title">Купить билет</h2>
       <p class="ev-tickets__note">Выбери билет в виджете Voroh.</p>
-      <button type="button" class="ev-cta ev-cta--onred" id="ticketOpen" data-ticket-open data-ticket-url="https://voroh.ru/widget/event/1043748/01a17876-e4b4-8c39-9c9a-f002803f071c/" data-ticket-title="CUSTOM × Вкусы Казани"><span>Открыть покупку билета</span></button>
       <div class="ev-embed" id="ticketEmbed">
-        <div class="ev-embed__placeholder" id="embedPlaceholder">
-          <p class="ev-embed__hint">Виджет покупки билетов загрузится по кнопке — чтобы страница открывалась быстро.</p>
-          <button type="button" class="ev-embed__load" id="embedLoad" data-ticket-url="https://voroh.ru/widget/event/1043748/01a17876-e4b4-8c39-9c9a-f002803f071c/">Загрузить виджет</button>
-        </div>
-        <iframe class="ev-embed__frame widget-tabs__iframe" id="widget-iframe" data-src="https://voroh.ru/widget/event/1043748/01a17876-e4b4-8c39-9c9a-f002803f071c/" referrerpolicy="same-origin" data-analytic="iframe" frameborder="0" sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-downloads allow-popups-to-escape-sandbox" allow="clipboard-write" title="Покупка билетов" hidden></iframe>
+        <iframe class="ev-embed__frame widget-tabs__iframe" id="widget-iframe" src="https://voroh.ru/widget/event/1043748/01a17876-e4b4-8c39-9c9a-f002803f071c/" referrerpolicy="same-origin" data-analytic="iframe" frameborder="0" sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-downloads allow-popups-to-escape-sandbox" allow="clipboard-write" title="Билеты — Казань"></iframe>
       </div>
     </section>
   </main>
 
-  <section class="ticket-modal" id="ticketModal" aria-hidden="true" aria-labelledby="ticketTitle" role="dialog" aria-modal="true">
-    <div class="ticket-modal__panel">
-      <header class="ticket-modal__head"><div><p class="ticket-modal__eyebrow">Билеты · 20 ноября</p><h2 class="ticket-modal__title" id="ticketTitle">CUSTOM × Вкусы Казани</h2></div><button class="ticket-modal__close" id="ticketClose" type="button" aria-label="Закрыть покупку билета">×</button></header>
-      <div class="ticket-modal__body"><div class="widget-inner-iframe"><iframe class="widget-tabs__iframe" referrerpolicy="same-origin" data-analytic="iframe" frameborder="0" id="widget-iframe-modal" data-src="https://voroh.ru/widget/event/1043748/01a17876-e4b4-8c39-9c9a-f002803f071c/" sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-downloads allow-popups-to-escape-sandbox" allow="clipboard-write" title="Покупка билетов"></iframe></div></div>
-    </div>
-  </section>
 
   <footer class="ev-footer">
     <div class="ev-footer__grid">
@@ -92,56 +81,5 @@
     <p class="ev-footer__legal">Мероприятие 18+. Организатор не обрабатывает полные данные банковских карт. Подробности — в <a href="privacy-policy.html" target="_blank" rel="noopener">политике обработки персональных данных</a>.</p>
   </footer>
 
-  <script>
-    (function () {
-      var modal = document.getElementById('ticketModal');
-      var closeBtn = document.getElementById('ticketClose');
-      var modalFrame = document.getElementById('widget-iframe-modal');
-      var embedFrame = document.getElementById('widget-iframe');
-      var embedPlaceholder = document.getElementById('embedPlaceholder');
-      var embedLoad = document.getElementById('embedLoad');
-      var titleEl = document.getElementById('ticketTitle');
-      var eyebrowEl = modal.querySelector('.ticket-modal__eyebrow');
-      var returnFocus = null;
-      var embedLoaded = false;
-
-      function loadEmbed() {
-        if (embedLoaded) return;
-        embedLoaded = true;
-        embedFrame.src = embedFrame.dataset.src;
-        embedFrame.hidden = false;
-        embedPlaceholder.hidden = true;
-      }
-
-      function setModal(open, trigger) {
-        if (open) {
-          returnFocus = trigger || document.activeElement;
-          if (trigger && trigger.dataset.ticketTitle) titleEl.textContent = trigger.dataset.ticketTitle;
-          eyebrowEl.textContent = 'Билеты · ' + ((trigger && trigger.dataset.ticketDate) || '20 ноября');
-          var url = (trigger && trigger.dataset.ticketUrl) || modalFrame.dataset.src;
-          if (url && modalFrame.getAttribute('src') !== url) modalFrame.src = url;
-          modal.classList.add('is-open');
-          modal.setAttribute('aria-hidden', 'false');
-          document.body.classList.add('ticket-open');
-          closeBtn.focus();
-        } else {
-          modal.classList.remove('is-open');
-          modal.setAttribute('aria-hidden', 'true');
-          document.body.classList.remove('ticket-open');
-          if (returnFocus && returnFocus.focus) returnFocus.focus();
-        }
-      }
-
-      document.querySelectorAll('[data-ticket-open]').forEach(function (btn) {
-        btn.addEventListener('click', function () { setModal(true, btn); });
-      });
-      embedLoad.addEventListener('click', loadEmbed);
-      closeBtn.addEventListener('click', function () { setModal(false); });
-      modal.addEventListener('click', function (e) { if (e.target === modal) setModal(false); });
-      document.addEventListener('keydown', function (e) {
-        if (e.key === 'Escape' && modal.classList.contains('is-open')) setModal(false);
-      });
-    })();
-  </script>
 </body>
 </html>
