@@ -258,6 +258,9 @@
     #telegram .event-ticket-cta { border-color:#fff; background:#fff; color:#080808; }
     #telegram .event-ticket-cta:hover,#telegram .event-ticket-cta:focus-visible { background:#f0e9e7; color:#080808; }
     @media(max-width:768px){#telegram.event-info{padding:64px 24px 64px}#telegram.event-info .event-info__body{margin-top:10px}#telegram.event-info .event-info__closing{margin-top:26px}#telegram.event-info .event-ticket-cta{background:#fff;color:#080808;border-color:#fff}#telegram.event-info .event-ticket-cta::after{color:#080808;border-color:#777;background:transparent}}
+    /* Keep all four about paragraphs in the event-info content column. */
+    #team .event-info__body .event-info__text:nth-child(4) { grid-column:1 / -1; color:#160706; font-size:clamp(21px,2.05vw,30px); font-weight:500; line-height:1.42; letter-spacing:-.005em; }
+    @media(max-width:768px){#team .event-info__body .event-info__text:nth-child(4){grid-column:1;font-size:clamp(20px,4.6vw,25px);font-weight:600;line-height:1.4}}
 </style>
   <noscript><style>
     /* Без JS шторы и intro не запускаются: слово-герой обязано остаться видимым. */
@@ -327,11 +330,11 @@
     <div class="upcoming__grid">
       <article class="upcoming-card">
         <div class="upcoming-card__visual"><img src="assets/custom/hero-kazan-desktop.webp" alt="Афиша CUSTOM × Вкусы Казани" loading="lazy" width="1920" height="768"></div>
-        <div class="upcoming-card__body"><p class="upcoming-card__meta">20 ноября / «КОРСТОН», 3 этаж · Drink Mall</p><h3 class="upcoming-card__city">Казань</h3><a class="upcoming-card__link" href="./kazan.html">Подробнее о событии</a></div>
+        <div class="upcoming-card__body"><p class="upcoming-card__meta">20 ноября / «КОРСТОН», 3 этаж · Drink Mall</p><h3 class="upcoming-card__city">Казань</h3><p class="upcoming-card__desc">22:22—06:00 · Специальный гость ПИКА</p><a class="upcoming-card__link" href="./kazan.html">Подробнее о событии</a></div>
       </article>
       <article class="upcoming-card">
         <div class="upcoming-card__visual upcoming-card__visual--ufa"><span class="upcoming-card__stamp">КАСТОМ 2К17</span></div>
-    <div class="upcoming-card__body"><p class="upcoming-card__meta">21 ноября / «Истина», ул. Комсомольская, 2</p><h3 class="upcoming-card__city">Уфа</h3><p class="upcoming-card__desc">CUSTOM × Вкусы Казани · специальный гость Пика</p><a class="upcoming-card__link" href="./ufa.html">Подробнее о событии</a></div>
+    <div class="upcoming-card__body"><p class="upcoming-card__meta">21 ноября / «Истина», ул. Комсомольская, 2</p><h3 class="upcoming-card__city">Уфа</h3><p class="upcoming-card__desc">22:00—06:00 · Специальный гость ПИКА</p><a class="upcoming-card__link" href="./ufa.html">Подробнее о событии</a></div>
       </article>
     </div>
     <p class="upcoming__next">Следующие города скоро...</p>
@@ -356,11 +359,12 @@
     <article class="event-info event-info--red" id="team">
       <span class="event-info__number">02</span>
       <p class="event-info__kicker">Казань / Предыстория</p>
-      <h2 class="event-info__title">Кастом</h2>
+      <h2 class="event-info__title">О нас</h2>
       <div class="event-info__body">
-        <p class="event-info__text">Кастом — команда из Казани, которая собирает вечера вокруг хип-хопа, R&amp;B и танца. Не просто ставит музыку, а придумывает, как человек проживёт ночь: кого встретит у входа, на каком треке выйдет на танцпол и с каким настроением уедет домой.</p>
-        <p class="event-info__text">Для нас площадка — часть лайнапа. Свет, звук, бар, люди, визуал и темп вечера работают вместе: можно прийти за любимыми треками, случайно познакомиться с кем-то у стойки и остаться до последнего сета.</p>
-        <p class="event-info__text">Мы не делаем «для галочки» и не пытаемся понравиться всем. Собираем своих — тех, кому важны отборная музыка, свобода в одежде и ощущение, что город на одну ночь стал чуть живее.</p>
+        <p class="event-info__text">Кастом — это 6 лет создания знаковых событий и вечеринок в Татарстане. Победитель премии «Лучшая промо-группа 2025» по версии журнала ENTER.</p>
+        <p class="event-info__text">Провели первый в Татарстане ночной рэп-фестиваль БИГ РАШН ФЕСТ на 2500+ человек.</p>
+        <p class="event-info__text">Работали с топ-артистами: SODA LUV, Big Russian Boss, SKY RAE, QUOK, MAYOT, LOVV66, Кравц и многими многими другими.</p>
+        <p class="event-info__text">Коллаборации с федеральными проектами: Лигаставок Media Basket, Вкусы Казани, Урам Парк, Enter и др.</p>
       </div>
     </article>
 
