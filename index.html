@@ -195,7 +195,7 @@
 
     /* Staging: event selector, kept separate from the existing event content. */
     .upcoming { position:relative; padding:clamp(58px,8vw,118px) clamp(20px,8vw,130px) clamp(88px,10vw,145px); background:#0b0a0a; color:#f4ebe5; }
-    body.upcoming-visible .ticket-float, body.ufa-visible .ticket-float { opacity:0!important; pointer-events:none!important; }
+    body.ufa-visible .ticket-float { opacity:0!important; pointer-events:none!important; }
     .upcoming__header { display:flex; justify-content:space-between; align-items:end; gap:20px; padding-bottom:28px; border-bottom:1px solid #74403b; }
     .upcoming__label { margin:0 0 16px; color:#ff6959; font-size:12px; letter-spacing:.18em; text-transform:uppercase; }
     .upcoming__title { margin:0; font-family:Didot,"Bodoni MT",Georgia,serif; font-size:clamp(48px,7vw,98px); font-weight:400; line-height:.92; letter-spacing:-.055em; text-transform:uppercase; }
@@ -245,6 +245,19 @@
     .site-brand:focus-visible { outline-color:#fff4ee; outline-offset:5px; }
     @media(min-width:769px){.site-brand{--brand-size:120px}.site-brand,.site-brand:hover,.site-brand:focus-visible{transform:translate(-50%,calc((100svh - var(--brand-size)) * .5 * (1 - var(--brand-progress)) + 18px * var(--brand-progress))) rotate(-6deg) scale(calc(1 - .75 * var(--brand-progress)))}}
     @media(prefers-reduced-motion:reduce){.site-brand,.site-brand:hover,.site-brand:focus-visible{--brand-progress:1!important;transform:translate(-50%,12px) rotate(-6deg) scale(.25);background-image:none;mix-blend-mode:normal;-webkit-text-fill-color:#f4eee8;color:#f4eee8;text-shadow:0 2px 14px rgba(0,0,0,.55)} }
+    /* City availability, floating navigation and Telegram contrast. */
+    .upcoming__next { margin:clamp(40px,6vw,90px) 0 0; color:#fff5ef; font-family:Didot,"Bodoni MT",Georgia,serif; font-size:clamp(36px,5vw,76px); font-weight:400; line-height:1; letter-spacing:-.06em; text-transform:uppercase; overflow-wrap:break-word; }
+    .ticket-float,.cookie-visible .ticket-float { bottom:max(16px,env(safe-area-inset-bottom)); text-decoration:none; }
+    .cookie-visible .ticket-float { bottom:calc(max(16px,env(safe-area-inset-bottom)) + var(--cookie-height,145px) + 12px); }
+    .upcoming-card__body .upcoming-card__link { margin-top:auto; }
+    #telegram.event-info { background:#080808; color:#fff; align-content:center; row-gap:0; }
+    #telegram .event-info__number,#telegram .event-info__kicker,#telegram .event-info__title,#telegram .event-info__text { color:#fff!important; }
+    #telegram .event-info__title { margin-top:clamp(20px,3vw,40px); }
+    #telegram .event-info__body { margin-top:clamp(20px,3vw,36px); }
+    #telegram .event-info__closing { margin-top:clamp(24px,3vw,38px); }
+    #telegram .event-ticket-cta { border-color:#fff; background:#fff; color:#080808; }
+    #telegram .event-ticket-cta:hover,#telegram .event-ticket-cta:focus-visible { background:#f0e9e7; color:#080808; }
+    @media(max-width:768px){#telegram.event-info{padding:64px 24px 64px}#telegram.event-info .event-info__body{margin-top:10px}#telegram.event-info .event-info__closing{margin-top:26px}#telegram.event-info .event-ticket-cta{background:#fff;color:#080808;border-color:#fff}#telegram.event-info .event-ticket-cta::after{color:#080808;border-color:#777;background:transparent}}
 </style>
   <noscript><style>
     /* Без JS шторы и intro не запускаются: слово-герой обязано остаться видимым. */
@@ -296,8 +309,8 @@
   <div class="curtain left"></div><div class="curtain right"></div>
   <main id="video-wrapper">
     <picture>
-      <source media="(max-width: 768px)" srcset="assets/custom/hero-crowd-custom.webp?v=20261109">
-      <img id="bgfallback" src="assets/custom/hero-crowd-custom.webp?v=20261109" alt="Толпа на вечеринке Кастом: люди танцуют и поднимают телефоны со светом">
+      <source media="(max-width: 768px)" srcset="assets/custom/hero-mobile-20261109.webp?v=20261109">
+      <img id="bgfallback" src="assets/custom/hero-desktop-20261109.webp?v=20261109" alt="Артисты и гости на вечеринке Кастом">
     </picture>
     <div id="overlay-container"></div>
     <div class="hero-lockup">
@@ -314,20 +327,21 @@
     <div class="upcoming__grid">
       <article class="upcoming-card">
         <div class="upcoming-card__visual"><img src="assets/custom/hero-kazan-desktop.webp" alt="Афиша CUSTOM × Вкусы Казани" loading="lazy" width="1920" height="768"></div>
-        <div class="upcoming-card__body"><p class="upcoming-card__meta">20 ноября / «КОРСТОН», 3 этаж · Drink Mall</p><h3 class="upcoming-card__city">Казань</h3><p class="upcoming-card__desc">CUSTOM × Вкусы Казани · специальный гость Пика</p><a class="upcoming-card__link" href="./kazan.html">Подробнее о событии</a></div>
+        <div class="upcoming-card__body"><p class="upcoming-card__meta">20 ноября / «КОРСТОН», 3 этаж · Drink Mall</p><h3 class="upcoming-card__city">Казань</h3><a class="upcoming-card__link" href="./kazan.html">Подробнее о событии</a></div>
       </article>
       <article class="upcoming-card">
         <div class="upcoming-card__visual upcoming-card__visual--ufa"><span class="upcoming-card__stamp">КАСТОМ 2К17</span></div>
-    <div class="upcoming-card__body"><p class="upcoming-card__meta">21 ноября / «Истина», ул. Комсомольская, 2</p><h3 class="upcoming-card__city">Уфа</h3><p class="upcoming-card__desc">КАСТОМ 2К17 · 22:00–06:00</p><a class="upcoming-card__link" href="./ufa.html">Подробнее о событии</a></div>
+    <div class="upcoming-card__body"><p class="upcoming-card__meta">21 ноября / «Истина», ул. Комсомольская, 2</p><h3 class="upcoming-card__city">Уфа</h3><p class="upcoming-card__desc">CUSTOM × Вкусы Казани · специальный гость Пика</p><a class="upcoming-card__link" href="./ufa.html">Подробнее о событии</a></div>
       </article>
     </div>
+    <p class="upcoming__next">Следующие города скоро...</p>
   </section>
 
   <section class="projects" aria-label="Кастом проекты">
     <!-- БЛИЖАЙШЕЕ СОБЫТИЕ -->
     <article class="event-info event-info--event" id="event">
       <span class="event-info__number">01</span>
-      <p class="event-info__kicker">Кастом · Казань / Уфа</p>
+      <p class="event-info__kicker">Кастом · Погружение</p>
       <div class="event-info__body">
         <p class="event-info__text">Помнишь, как всё было? Когда ты листал «сохраненки» в ВК в три часа ночи, крутил в руках спиннер и слушал ЛСП или Pharaoh на повторе. Время, когда малиновые закаты были фоном для твоих фотографий, а на тусовки ты надевал скинни, оверсайз и доставал свои Vans.</p>
         <p class="event-info__text">С тех пор прошло почти 10 лет. Мы выросли, но эта эстетика и излюбленные треки, которые мы слушаем до сих пор, зная каждое слово, никуда не ушли.</p>
@@ -341,7 +355,7 @@
     <!-- КОМАНДА -->
     <article class="event-info event-info--red" id="team">
       <span class="event-info__number">02</span>
-      <p class="event-info__kicker">Казань / с 2020</p>
+      <p class="event-info__kicker">Казань / Предыстория</p>
       <h2 class="event-info__title">Кастом</h2>
       <div class="event-info__body">
         <p class="event-info__text">Кастом — команда из Казани, которая собирает вечера вокруг хип-хопа, R&amp;B и танца. Не просто ставит музыку, а придумывает, как человек проживёт ночь: кого встретит у входа, на каком треке выйдет на танцпол и с каким настроением уедет домой.</p>
@@ -545,7 +559,9 @@
     function syncHeroAnchorVisibility() {
       if (!heroAnchor) return;
       const rect=heroAnchor.getBoundingClientRect();
-      document.body.classList.toggle('upcoming-visible', rect.top < window.innerHeight && rect.bottom > 0);
+      const showing=rect.top < window.innerHeight && rect.bottom > 0;
+      document.body.classList.toggle('upcoming-visible', showing);
+      if (ticketFloat) ticketFloat.hidden=showing;
     }
     function updateHeroActions() {
       const pastHero=window.scrollY>window.innerHeight*.28;
@@ -563,6 +579,8 @@
     const cookieNote=document.getElementById('cookieNote'), cookieAccept=document.getElementById('cookieAccept'), cookieKey='custom843_cookie_seen';
     try { if (!localStorage.getItem(cookieKey)) { cookieNote.hidden=false; document.body.classList.add('cookie-visible'); } } catch (_) { cookieNote.hidden=false; document.body.classList.add('cookie-visible'); }
     cookieAccept?.addEventListener('click',()=>{ try { localStorage.setItem(cookieKey,'1'); } catch (_) {} cookieNote.hidden=true; document.body.classList.remove('cookie-visible'); });
+    function measureCookieNotice(){if(cookieNote && !cookieNote.hidden)document.documentElement.style.setProperty('--cookie-height',Math.ceil(cookieNote.getBoundingClientRect().height)+'px');}
+    measureCookieNotice(); window.addEventListener('resize',measureCookieNotice,{passive:true});
 
     document.addEventListener('keydown',event=>{ if(event.key!=='Escape') return; if(ticketModal?.classList.contains('is-open')) setTicketModal(false); else if(menuTrigger?.getAttribute('aria-expanded')==='true') toggleMenu(false); });
   </script>
