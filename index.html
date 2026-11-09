@@ -226,6 +226,27 @@
       #next-events .event-info__closing{margin-top:36px}
       #next-events .event-ticket-cta{min-width:0;max-width:100%;width:100%}
     }
+    /* One wordmark: large photo-negative in the hero, compact in navigation. */
+    .site-brand {
+      --brand-progress:0; --brand-size:clamp(80px,23vw,180px);
+      position:fixed; top:0; left:50%; z-index:10002;
+      display:inline-block; white-space:nowrap; width:max-content;
+      font-size:var(--brand-size); line-height:1; color:#f4eee8;
+      background-image:url("assets/custom/hero-crowd-negative-v1.webp?v=20261109");
+      background-repeat:no-repeat; background-position:center 36%; background-size:cover;
+      transform:translate(-50%,calc((100svh - var(--brand-size)) * .5 * (1 - var(--brand-progress)) + 12px * var(--brand-progress))) rotate(-6deg) scale(calc(1 - .75 * var(--brand-progress)));
+      transform-origin:center top; text-shadow:none; will-change:transform;
+      transition:opacity .45s ease .34s; -webkit-text-fill-color:transparent;
+      -webkit-background-clip:text; background-clip:text;
+    }
+    .site-brand.is-docked,.menu-open .site-brand {
+      background-image:none; -webkit-text-fill-color:#f4eee8; color:#f4eee8;
+      text-shadow:0 2px 14px rgba(0,0,0,.55),0 0 2px rgba(0,0,0,.4);
+    }
+    .site-brand:hover,.site-brand:focus-visible { color:#f4eee8; transform:translate(-50%,calc((100svh - var(--brand-size)) * .5 * (1 - var(--brand-progress)) + 12px * var(--brand-progress))) rotate(-6deg) scale(calc(1 - .75 * var(--brand-progress))); outline:2px solid transparent; }
+    .site-brand:focus-visible { outline-color:#fff4ee; outline-offset:5px; }
+    @media(min-width:769px){.site-brand{--brand-size:120px}.site-brand,.site-brand:hover,.site-brand:focus-visible{transform:translate(-50%,calc((100svh - var(--brand-size)) * .5 * (1 - var(--brand-progress)) + 18px * var(--brand-progress))) rotate(-6deg) scale(calc(1 - .75 * var(--brand-progress)))}}
+    @media(prefers-reduced-motion:reduce){.site-brand,.site-brand:hover,.site-brand:focus-visible{--brand-progress:1!important;transform:translate(-50%,12px) rotate(-6deg) scale(.25);background-image:none;-webkit-text-fill-color:#f4eee8;color:#f4eee8;text-shadow:0 2px 14px rgba(0,0,0,.55)} }
 </style>
   <noscript><style>
     /* Без JS шторы и intro не запускаются: слово-герой обязано остаться видимым. */
@@ -389,6 +410,21 @@
   <script>
     const overlay=document.getElementById('overlay-container');
         const menuTrigger=document.getElementById('menuTrigger'), menu=document.getElementById('siteMenu'), mobileMenuBar=document.getElementById('mobileMenuBar'), siteBrand=document.getElementById('siteBrand'), bgfallback=document.getElementById('bgfallback');
+    // Scroll progress is clamped; the same wordmark returns when scrolling back.
+    const brandReducedMotion=window.matchMedia('(prefers-reduced-motion: reduce)');
+    let brandFrame=0;
+    function syncBrandMotion(){
+      brandFrame=0;
+      const hero=document.getElementById('video-wrapper');
+      const progress=brandReducedMotion.matches ? 1 : Math.max(0,Math.min(1,window.scrollY / Math.max(1,hero.offsetHeight*.8)));
+      siteBrand.style.setProperty('--brand-progress',progress.toFixed(4));
+      siteBrand.classList.toggle('is-docked',progress>=.82);
+    }
+    function requestBrandMotion(){if(!brandFrame)brandFrame=requestAnimationFrame(syncBrandMotion)}
+    window.addEventListener('scroll',requestBrandMotion,{passive:true});
+    window.addEventListener('resize',requestBrandMotion,{passive:true});
+    brandReducedMotion.addEventListener?.('change',requestBrandMotion);
+    syncBrandMotion();
     let projectRevealsStarted=false, overlayRevealed=false;
         function revealVideoOverlay() {
       if (overlayRevealed) return;
