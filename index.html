@@ -3,6 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Кастом — события и вечеринки в Татарстане. Афиша ближайших событий в Казани, билеты, история проекта и магазин.">
   <title>Кастом</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
   <link rel="stylesheet" href="https://voroh.ru/sources/widget/dist/assets/widget-popup-style.css?v=1790788050">
@@ -195,7 +196,6 @@
 
     /* Staging: event selector, kept separate from the existing event content. */
     .upcoming { position:relative; padding:clamp(58px,8vw,118px) clamp(20px,8vw,130px) clamp(88px,10vw,145px); background:#0b0a0a; color:#f4ebe5; }
-    body.ufa-visible .ticket-float { opacity:0!important; pointer-events:none!important; }
     .upcoming__header { display:flex; justify-content:space-between; align-items:end; gap:20px; padding-bottom:28px; border-bottom:1px solid #74403b; }
     .upcoming__label { margin:0 0 16px; color:#ff6959; font-size:12px; letter-spacing:.18em; text-transform:uppercase; }
     .upcoming__title { margin:0; font-family:Didot,"Bodoni MT",Georgia,serif; font-size:clamp(48px,7vw,98px); font-weight:400; line-height:.92; letter-spacing:-.055em; text-transform:uppercase; }
@@ -204,8 +204,6 @@
     .upcoming-card { min-width:0; display:flex; flex-direction:column; background:#17100f; border:1px solid #51302d; }
     .upcoming-card__visual { position:relative; aspect-ratio:1.7; overflow:hidden; background:#210b0a; }
     .upcoming-card__visual img { width:100%; height:100%; display:block; object-fit:cover; object-position:center; }
-    .upcoming-card__visual--ufa { display:flex; flex-direction:column; justify-content:space-between; padding:clamp(20px,3vw,42px); background:radial-gradient(circle at 80% 25%,#a41f19 0,transparent 42%),linear-gradient(135deg,#4a0b09,#140a0a 75%); }
-    .upcoming-card__visual--ufa::after { content:'УФА'; position:absolute; right:-.03em; bottom:-.15em; color:rgba(255,105,89,.15); font-family:Didot,"Bodoni MT",Georgia,serif; font-size:clamp(100px,18vw,250px); letter-spacing:-.09em; line-height:.8; }
     .upcoming-card__stamp { position:relative; z-index:1; color:#ffe2d9; font-size:12px; letter-spacing:.18em; text-transform:uppercase; }
     .upcoming-card__body { flex:1; display:flex; flex-direction:column; align-items:flex-start; padding:clamp(22px,3vw,42px); }
     .upcoming-card__meta { margin:0 0 14px; color:#ff8e80; font-size:12px; letter-spacing:.12em; line-height:1.4; text-transform:uppercase; }
@@ -213,7 +211,7 @@
     .upcoming-card__desc { margin:18px 0 28px; color:#d8c4bd; font-size:16px; line-height:1.5; }
     .upcoming-card__link { display:inline-flex; align-items:center; justify-content:center; min-height:46px; margin-top:auto; padding:12px 21px; border:1px solid #ff6959; color:#fff4ee; font-size:12px; font-weight:700; letter-spacing:.08em; text-decoration:none; text-transform:uppercase; transition:background .2s,color .2s; }
     .upcoming-card__link:hover,.upcoming-card__link:focus-visible { background:#ff6959; color:#170908; outline:2px solid #fff; outline-offset:3px; }
-    @media(max-width:768px) { .upcoming { padding:56px 20px 100px; }.upcoming__header { display:block; }.upcoming__note { margin-top:20px; }.upcoming__grid { grid-template-columns:1fr; gap:20px; margin-top:24px; }.upcoming-card__visual { aspect-ratio:1.65; }.upcoming-card__visual--ufa::after { font-size:clamp(110px,34vw,210px); }.upcoming-card__body { padding:24px; } }
+    @media(max-width:768px) { .upcoming { padding:56px 20px 100px; }.upcoming__header { display:block; }.upcoming__note { margin-top:20px; }.upcoming__grid { grid-template-columns:1fr; gap:20px; margin-top:24px; }.upcoming-card__visual { aspect-ratio:1.65; }.upcoming-card__body { padding:24px; } }
 
     /* Mobile: prevent content overflow in the next events panel. */
     @media(max-width:768px){
@@ -226,6 +224,8 @@
       #next-events .event-info__closing{margin-top:36px}
       #next-events .event-ticket-cta{min-width:0;max-width:100%;width:100%}
     }
+    /* Keep the wordmark below the menu while it is open. */
+    body.menu-open .site-brand { z-index: 9999; }
     /* One wordmark: live backdrop inversion in the hero, compact in navigation. */
     .site-brand {
       --brand-progress:0; --brand-size:clamp(80px,23vw,180px);
@@ -261,6 +261,8 @@
     /* Keep all four about paragraphs in the event-info content column. */
     #team .event-info__body .event-info__text:nth-child(4) { grid-column:1 / -1; color:#160706; font-size:clamp(21px,2.05vw,30px); font-weight:500; line-height:1.42; letter-spacing:-.005em; }
     @media(max-width:768px){#team .event-info__body .event-info__text:nth-child(4){grid-column:1;font-size:clamp(20px,4.6vw,25px);font-weight:600;line-height:1.4}}
+
+.upcoming-card--single { grid-column: 1 / -1; width: min(100%, 760px); justify-self: center; }
 </style>
   <noscript><style>
     /* Без JS шторы и intro не запускаются: слово-герой обязано остаться видимым. */
@@ -317,25 +319,23 @@
     </picture>
     <div id="overlay-container"></div>
     <div class="hero-lockup">
-      <p class="hero-kicker hero-kicker--top">Кастом · Казань · Уфа</p>
+      <p class="hero-kicker hero-kicker--top">Кастом · Казань</p>
       <p class="hero-kicker hero-kicker--bottom">Ближайшие события ниже</p>
     </div>
     <button class="hero-scroll-cue" id="heroScrollCue" type="button" aria-label="Перейти к ближайшим событиям"></button>
     <a class="hero-event-link" id="heroEventLink" href="#upcoming">Ближайшие события</a>
   </main>
-    <a class="ticket-float" href="#upcoming" aria-label="Выбрать город и посмотреть ближайшие события"><span class="ticket-float__eyebrow">Казань · Уфа · Афиша</span><span class="ticket-float__label">Выбрать город</span></a>
+    <a class="ticket-float" href="#upcoming" aria-label="Посмотреть ближайшие события"><span class="ticket-float__eyebrow">Казань · Афиша</span><span class="ticket-float__label">Смотреть события</span></a>
 
+  <span id="august-event" aria-hidden="true"></span><span id="program" aria-hidden="true"></span>
   <section class="upcoming" id="upcoming" aria-labelledby="upcoming-title">
     <div class="upcoming__header"><div><p class="upcoming__label">CUSTOM / АФИША</p><h2 class="upcoming__title" id="upcoming-title">Ближайшие<br>города</h2></div><p class="upcoming__note">Выбирай свой город</p></div>
     <div class="upcoming__grid">
-      <article class="upcoming-card">
+      <article class="upcoming-card upcoming-card--single">
         <div class="upcoming-card__visual"><img src="assets/custom/hero-kazan-desktop.webp" alt="Афиша CUSTOM × Вкусы Казани" loading="lazy" width="1920" height="768"></div>
         <div class="upcoming-card__body"><p class="upcoming-card__meta">20 ноября / «КОРСТОН», 3 этаж · Drink Mall</p><h3 class="upcoming-card__city">Казань</h3><p class="upcoming-card__desc">22:22—06:00 · Специальный гость ПИКА</p><a class="upcoming-card__link" href="./kazan.html">Купить билеты</a></div>
       </article>
-      <article class="upcoming-card">
-        <div class="upcoming-card__visual"><img src="assets/custom/ufa-pika-landscape-20261109-900.webp?v=20261109b" srcset="assets/custom/ufa-pika-landscape-20261109-900.webp?v=20261109b 900w, assets/custom/ufa-pika-landscape-20261109-1782.webp?v=20261109b 1782w" sizes="(max-width: 768px) calc(100vw - 40px), 50vw" alt="Афиша Кастом × Волна, Уфа, 21 ноября, специальный гость Пика" loading="lazy" width="1782" height="1080"></div>
-    <div class="upcoming-card__body"><p class="upcoming-card__meta">21 ноября / «Истина», ул. Комсомольская, 2</p><h3 class="upcoming-card__city">Уфа</h3><p class="upcoming-card__desc">22:00—06:00 · Специальный гость ПИКА</p><a class="upcoming-card__link" href="./ufa.html">Купить билеты</a></div>
-      </article>
+      
     </div>
     <p class="upcoming__next">Следующие города скоро...</p>
   </section>
@@ -393,7 +393,7 @@
       <h2 class="site-faq__title" id="faq-title">Вопросы<br>и ответы</h2>
       <div class="faq-grid">
         <details class="faq-item"><summary>Как часто проводите мероприятия?</summary><p>Собираемся регулярно — следи за анонсами в Telegram и Instagram. Обычно несколько событий в месяц, летом чаще.</p></details>
-        <details class="faq-item"><summary>Где проходят события?</summary><p>20 ноября — «КОРСТОН» (Drink Mall, 3 этаж, ул. Н.Ершова, д.1) в Казани, 21 ноября — «Истина» (ул. Комсомольская, 2) в Уфе. Дальнейшие локации анонсируем заранее в соцсетях.</p></details>
+        <details class="faq-item"><summary>Где проходят события?</summary><p>20 ноября — «КОРСТОН» (Drink Mall, 3 этаж, ул. Н.Ершова, д.1) в Казани. Дальнейшие локации анонсируем заранее в соцсетях.</p></details>
         <details class="faq-item"><summary>Как купить билет?</summary><p>Только через официальный билетный оператор. Кнопка «Купить билет» на сайте ведёт в защищённый виджет покупки.</p></details>
         <details class="faq-item"><summary>Есть ли возрастное ограничение?</summary><p>Да, событие <strong>18+</strong>. На входе могут попросить оригинал документа, подтверждающего возраст.</p></details>
         <details class="faq-item"><summary>Как вернуть билет?</summary><p>Возврат оформляется через интерфейс или поддержку билетного оператора в порядке, предусмотренном законодательством РФ и условиями продажи.</p></details>
