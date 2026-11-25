@@ -564,14 +564,22 @@
     ticketModal?.addEventListener('click',event=>{ if(event.target===ticketModal) setTicketModal(false); });
 
     const ticketCta=document.querySelector('.event-ticket-cta');
-    // Observe the visual banner, so tall cards need not fit into a phone viewport.
-    if ('IntersectionObserver' in window) {
-      const banners=[...document.querySelectorAll('.upcoming-card__visual')];
-      const glowObserver=new IntersectionObserver(entries=>{
-        entries.forEach(entry=>entry.target.closest('.upcoming-card')?.classList.toggle('is-scroll-lit',entry.isIntersecting));
-      },{rootMargin:'-35% 0px -35% 0px',threshold:0});
-      banners.forEach(banner=>glowObserver.observe(banner));
+    // Highlight the banner closest to the centre; cards can exceed phone height.
+    const cityCards=[...document.querySelectorAll('.upcoming-card')];
+    let cityGlowFrame=0;
+    function updateCityGlow() {
+      cityGlowFrame=0;
+      const viewport=window.innerHeight, centre=viewport/2;
+      const visible=cityCards.map(card=>({card,rect:card.querySelector('.upcoming-card__visual').getBoundingClientRect()}))
+        .filter(item=>item.rect.bottom>viewport*.35 && item.rect.top<viewport*.65);
+      visible.sort((a,b)=>Math.abs((a.rect.top+a.rect.bottom)/2-centre)-Math.abs((b.rect.top+b.rect.bottom)/2-centre));
+      const active=visible[0]?.card;
+      cityCards.forEach(card=>card.classList.toggle('is-scroll-lit',card===active));
     }
+    function requestCityGlow(){ if(!cityGlowFrame) cityGlowFrame=requestAnimationFrame(updateCityGlow); }
+    window.addEventListener('scroll',requestCityGlow,{passive:true});
+    window.addEventListener('resize',requestCityGlow,{passive:true});
+    requestCityGlow();
     if ('IntersectionObserver' in window && ticketCta) {
       const ctaReveal=new IntersectionObserver(entries=>{
         entries.forEach(entry=>{
