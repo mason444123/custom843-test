@@ -282,6 +282,21 @@
 .upcoming-card { transition:border-color .65s ease,box-shadow .65s ease; }
 .upcoming-card.is-scroll-lit { border-color:rgba(255,105,89,.82); box-shadow:0 0 0 1px rgba(255,105,89,.14),0 0 26px rgba(227,32,20,.23),0 14px 36px rgba(0,0,0,.3); }
 @media (prefers-reduced-motion:reduce) { .upcoming-card { transition:none; } }
+/* City shortcuts are independent links, so they also work without JavaScript. */
+.hero-city-nav { position:absolute; z-index:6; left:50%; top:clamp(90px,18svh,180px); width:min(620px,calc(100% - 36px)); transform:translateX(-50%); }
+.hero-city-nav__label { margin:0 0 10px; color:#fff3ed; text-align:center; text-shadow:0 2px 12px #000; font-size:10px; font-weight:800; letter-spacing:.18em; line-height:1.2; text-transform:uppercase; }
+.hero-city-nav__grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:8px; }
+.hero-city-nav__link { position:relative; display:flex; min-width:0; min-height:58px; flex-direction:column; justify-content:center; align-items:center; gap:4px; overflow:hidden; border:1px solid rgba(255,218,206,.42); background:rgba(12,9,9,.83); box-shadow:0 8px 25px rgba(0,0,0,.27); color:#fff5f0; text-align:center; text-decoration:none; -webkit-tap-highlight-color:transparent; transition:border-color .22s ease,background .22s ease,box-shadow .22s ease,transform .18s ease; }
+.hero-city-nav__link::after { content:''; position:absolute; left:0; bottom:0; width:100%; height:2px; background:#ff5e50; transform:scaleX(0); transform-origin:center; transition:transform .25s ease; }
+.hero-city-nav__date { color:#ffa195; font-size:10px; font-weight:800; letter-spacing:.1em; line-height:1; }
+.hero-city-nav__name { color:#fff9f5; font-family:Didot,"Bodoni MT",Georgia,serif; font-size:clamp(17px,2vw,24px); line-height:1; }
+.hero-city-nav__link:hover,.hero-city-nav__link:focus-visible,.hero-city-nav__link.is-pressed { border-color:#ff6959; background:rgba(103,18,15,.9); box-shadow:0 0 24px rgba(227,32,20,.26); outline:none; }
+.hero-city-nav__link:hover::after,.hero-city-nav__link:focus-visible::after,.hero-city-nav__link.is-pressed::after { transform:scaleX(1); }
+.hero-city-nav__link:active,.hero-city-nav__link.is-pressed { transform:scale(.96); }
+.hero-city-nav__link:focus-visible { outline:2px solid #fff4ee; outline-offset:3px; }
+@media(max-width:768px) { .hero-city-nav { top:clamp(90px,17svh,150px); width:calc(100% - 32px); }.hero-city-nav__grid { gap:6px; }.hero-city-nav__link { min-height:56px; }.hero-city-nav__name { font-size:19px; } }
+@media(max-height:500px) and (orientation:landscape) { .hero-city-nav { top:72px; max-width:480px; }.hero-city-nav__label { margin-bottom:5px; }.hero-city-nav__link { min-height:48px; } }
+@media(prefers-reduced-motion:reduce) { .hero-city-nav__link,.hero-city-nav__link::after { transition:none; }.hero-city-nav__link:active,.hero-city-nav__link.is-pressed { transform:none; } }
 </style>
   <noscript><style>
     /* Без JS шторы и intro не запускаются: слово-герой обязано остаться видимым. */
@@ -337,6 +352,14 @@
       <img id="bgfallback" src="assets/custom/hero-desktop-20261109.webp?v=20261109" alt="Артисты и гости на вечеринке Кастом">
     </picture>
     <div id="overlay-container"></div>
+    <nav class="hero-city-nav" aria-label="Быстрый выбор города">
+      <p class="hero-city-nav__label">Выбери свой город</p>
+      <div class="hero-city-nav__grid">
+        <a class="hero-city-nav__link" href="#city-spb"><span class="hero-city-nav__date">18.12</span><span class="hero-city-nav__name">Питер</span></a>
+        <a class="hero-city-nav__link" href="#city-moscow"><span class="hero-city-nav__date">19.12</span><span class="hero-city-nav__name">Москва</span></a>
+        <a class="hero-city-nav__link" href="#city-kazan"><span class="hero-city-nav__date">31.12</span><span class="hero-city-nav__name">Казань</span></a>
+      </div>
+    </nav>
     <div class="hero-lockup">
       <p class="hero-kicker hero-kicker--top">Кастом · Декабрь</p>
       <p class="hero-kicker hero-kicker--bottom">Ближайшие события ниже</p>
@@ -350,15 +373,15 @@
   <section class="upcoming" id="upcoming" aria-labelledby="upcoming-title">
     <div class="upcoming__header"><div><p class="upcoming__label">CUSTOM / АФИША</p><h2 class="upcoming__title" id="upcoming-title">Ближайшие<br>города</h2></div><p class="upcoming__note">Выбирай свой город</p></div>
     <div class="upcoming__grid">
-      <article class="upcoming-card">
+      <article class="upcoming-card" id="city-spb">
         <div class="upcoming-card__visual upcoming-card__visual--december upcoming-card__visual--spb"><span class="upcoming-card__art-label">18 декабря · Санкт-Петербург</span><span class="upcoming-card__art-title">Кастом<br>2К17</span></div>
         <div class="upcoming-card__body"><p class="upcoming-card__meta">18 декабря · Кастом 2К17</p><h3 class="upcoming-card__city">Санкт-Петербург</h3><p class="upcoming-card__desc">Возвращаемся в 2017-й.</p><div class="upcoming-card__guest">Специальный гость<strong>Ганвест</strong></div><a class="upcoming-card__link" href="./spb.html#tickets">Купить билеты</a></div>
       </article>
-      <article class="upcoming-card">
+      <article class="upcoming-card" id="city-moscow">
         <div class="upcoming-card__visual upcoming-card__visual--december upcoming-card__visual--moscow"><span class="upcoming-card__art-label">19 декабря · Москва</span><span class="upcoming-card__art-title">Кастом<br>2К17</span></div>
         <div class="upcoming-card__body"><p class="upcoming-card__meta">19 декабря · Кастом 2К17</p><h3 class="upcoming-card__city">Москва</h3><p class="upcoming-card__desc">Возвращаемся в 2017-й.</p><div class="upcoming-card__guest">Специальный гость<strong>Ганвест</strong></div></div>
       </article>
-      <article class="upcoming-card">
+      <article class="upcoming-card" id="city-kazan">
         <div class="upcoming-card__visual upcoming-card__visual--december upcoming-card__visual--newyear"><span class="upcoming-card__art-label">31 декабря · Казань</span><span class="upcoming-card__art-title">Новый<br>год</span></div>
         <div class="upcoming-card__body"><p class="upcoming-card__meta">31 декабря · Новый год</p><h3 class="upcoming-card__city">Казань</h3><p class="upcoming-card__desc">Встречаем Новый год с Кастом.</p></div>
       </article>
@@ -580,6 +603,22 @@
     window.addEventListener('scroll',requestCityGlow,{passive:true});
     window.addEventListener('resize',requestCityGlow,{passive:true});
     requestCityGlow();
+    let cityNavTimer=0;
+    document.querySelectorAll('.hero-city-nav__link').forEach(link=>link.addEventListener('click',event=>{
+      if(event.button!==0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+      const target=document.getElementById(link.getAttribute('href').slice(1));
+      if(!target) return;
+      event.preventDefault();
+      clearTimeout(cityNavTimer);
+      document.querySelectorAll('.hero-city-nav__link').forEach(item=>item.classList.remove('is-pressed'));
+      link.classList.add('is-pressed');
+      const reduce=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      cityNavTimer=setTimeout(()=>{
+        history.replaceState(null,'',link.getAttribute('href'));
+        target.querySelector('.upcoming-card__visual').scrollIntoView({behavior:reduce?'instant':'smooth',block:'center'});
+        setTimeout(()=>link.classList.remove('is-pressed'),240);
+      },reduce?0:150);
+    }));
     if ('IntersectionObserver' in window && ticketCta) {
       const ctaReveal=new IntersectionObserver(entries=>{
         entries.forEach(entry=>{
