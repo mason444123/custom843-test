@@ -207,7 +207,7 @@
     .upcoming-card__stamp { position:relative; z-index:1; color:#ffe2d9; font-size:12px; letter-spacing:.18em; text-transform:uppercase; }
     .upcoming-card__body { flex:1; display:flex; flex-direction:column; align-items:flex-start; padding:clamp(22px,3vw,42px); }
     .upcoming-card__meta { margin:0 0 14px; color:#ff8e80; font-size:12px; letter-spacing:.12em; line-height:1.4; text-transform:uppercase; }
-    .upcoming-card__city { margin:0; color:#fff5ef; font-family:Didot,"Bodoni MT",Georgia,serif; font-size:clamp(48px,5vw,76px); font-weight:400; line-height:.9; letter-spacing:-.06em; text-transform:uppercase; }
+.upcoming-card__city { margin:0; color:#fff5ef; font-family:Didot,"Bodoni MT",Georgia,serif; font-size:clamp(36px,4.4vw,68px); font-weight:400; line-height:1; letter-spacing:-.06em; text-transform:uppercase; overflow-wrap:anywhere; }
     .upcoming-card__desc { margin:18px 0 28px; color:#d8c4bd; font-size:16px; line-height:1.5; }
     .upcoming-card__link { display:inline-flex; align-items:center; justify-content:center; min-height:46px; margin-top:auto; padding:12px 21px; border:1px solid #ff6959; color:#fff4ee; font-size:12px; font-weight:700; letter-spacing:.08em; text-decoration:none; text-transform:uppercase; transition:background .2s,color .2s; }
     .upcoming-card__link:hover,.upcoming-card__link:focus-visible { background:#ff6959; color:#170908; outline:2px solid #fff; outline-offset:3px; }
@@ -263,6 +263,13 @@
     @media(max-width:768px){#team .event-info__body .event-info__text:nth-child(4){grid-column:1;font-size:clamp(20px,4.6vw,25px);font-weight:600;line-height:1.4}}
 
 .upcoming-card--single { grid-column: 1 / -1; width: min(100%, 760px); justify-self: center; }
+/* Декабрьская афиша: место для будущих постеров без устаревших изображений. */
+.upcoming-card__visual--december { display:flex; flex-direction:column; justify-content:space-between; padding:clamp(20px,3vw,38px); background:radial-gradient(circle at 80% 20%,rgba(227,11,8,.55),transparent 42%),linear-gradient(135deg,#310d0d,#100a0a 75%); }
+.upcoming-card__visual--newyear { background:radial-gradient(circle at 80% 20%,rgba(204,161,87,.34),transparent 40%),linear-gradient(135deg,#32100e,#100a0a 75%); }
+.upcoming-card__art-label { color:#ff9587; font-size:11px; font-weight:800; letter-spacing:.16em; text-transform:uppercase; }
+.upcoming-card__art-title { color:#fff2e8; font-family:Didot,"Bodoni MT",Georgia,serif; font-size:clamp(50px,6vw,96px); line-height:.8; letter-spacing:-.07em; text-transform:uppercase; }
+.upcoming-card__guest { margin:0 0 24px; padding:13px 16px; border-left:3px solid #ff6959; background:rgba(255,105,89,.08); color:#fff4ee; font-size:14px; letter-spacing:.04em; }
+.upcoming-card__guest strong { display:block; margin-top:4px; font-size:23px; letter-spacing:-.02em; text-transform:uppercase; }
 </style>
   <noscript><style>
     /* Без JS шторы и intro не запускаются: слово-герой обязано остаться видимым. */
@@ -319,25 +326,31 @@
     </picture>
     <div id="overlay-container"></div>
     <div class="hero-lockup">
-      <p class="hero-kicker hero-kicker--top">Кастом · Казань</p>
+      <p class="hero-kicker hero-kicker--top">Кастом · Декабрь</p>
       <p class="hero-kicker hero-kicker--bottom">Ближайшие события ниже</p>
     </div>
     <button class="hero-scroll-cue" id="heroScrollCue" type="button" aria-label="Перейти к ближайшим событиям"></button>
     <a class="hero-event-link" id="heroEventLink" href="#upcoming">Ближайшие события</a>
   </main>
-    <a class="ticket-float" href="#upcoming" aria-label="Посмотреть ближайшие события"><span class="ticket-float__eyebrow">Казань · Афиша</span><span class="ticket-float__label">Смотреть события</span></a>
+    <a class="ticket-float" href="#upcoming" aria-label="Посмотреть ближайшие события"><span class="ticket-float__eyebrow">Декабрь · Афиша</span><span class="ticket-float__label">Смотреть события</span></a>
 
   <span id="august-event" aria-hidden="true"></span><span id="program" aria-hidden="true"></span>
   <section class="upcoming" id="upcoming" aria-labelledby="upcoming-title">
     <div class="upcoming__header"><div><p class="upcoming__label">CUSTOM / АФИША</p><h2 class="upcoming__title" id="upcoming-title">Ближайшие<br>города</h2></div><p class="upcoming__note">Выбирай свой город</p></div>
     <div class="upcoming__grid">
-      <article class="upcoming-card upcoming-card--single">
-        <div class="upcoming-card__visual"><img src="assets/custom/hero-kazan-desktop.webp" alt="Афиша CUSTOM × Вкусы Казани" loading="lazy" width="1920" height="768"></div>
-        <div class="upcoming-card__body"><p class="upcoming-card__meta">20 ноября / «КОРСТОН», 3 этаж · Drink Mall</p><h3 class="upcoming-card__city">Казань</h3><p class="upcoming-card__desc">22:22—06:00 · Специальный гость ПИКА</p><a class="upcoming-card__link" href="./kazan.html">Купить билеты</a></div>
+      <article class="upcoming-card">
+        <div class="upcoming-card__visual upcoming-card__visual--december"><span class="upcoming-card__art-label">18 декабря · Санкт-Петербург</span><span class="upcoming-card__art-title">Кастом<br>2К17</span></div>
+        <div class="upcoming-card__body"><p class="upcoming-card__meta">18 декабря · Кастом 2К17</p><h3 class="upcoming-card__city">Санкт-Петербург</h3><p class="upcoming-card__desc">Возвращаемся в 2017-й.</p><div class="upcoming-card__guest">Специальный гость<strong>Ганвест</strong></div><a class="upcoming-card__link" href="./spb.html#tickets">Купить билеты</a></div>
       </article>
-      
+      <article class="upcoming-card">
+        <div class="upcoming-card__visual upcoming-card__visual--december"><span class="upcoming-card__art-label">19 декабря · Москва</span><span class="upcoming-card__art-title">Кастом<br>2К17</span></div>
+        <div class="upcoming-card__body"><p class="upcoming-card__meta">19 декабря · Кастом 2К17</p><h3 class="upcoming-card__city">Москва</h3><p class="upcoming-card__desc">Возвращаемся в 2017-й.</p><div class="upcoming-card__guest">Специальный гость<strong>Ганвест</strong></div><a class="upcoming-card__link" href="./moscow.html">Подробнее</a></div>
+      </article>
+      <article class="upcoming-card">
+        <div class="upcoming-card__visual upcoming-card__visual--december upcoming-card__visual--newyear"><span class="upcoming-card__art-label">31 декабря · Казань</span><span class="upcoming-card__art-title">Новый<br>год</span></div>
+        <div class="upcoming-card__body"><p class="upcoming-card__meta">31 декабря · Новый год</p><h3 class="upcoming-card__city">Казань</h3><p class="upcoming-card__desc">Встречаем Новый год с Кастом.</p><a class="upcoming-card__link" href="./kazan.html">Подробнее</a></div>
+      </article>
     </div>
-    <p class="upcoming__next">Следующие города скоро...</p>
   </section>
 
   <section class="projects" aria-label="Кастом проекты">
@@ -382,7 +395,7 @@
       <span class="event-info__number">04</span>
       <p class="event-info__kicker">Афиша / Анонсы</p>
       <h2 class="event-info__title">Следующие<br>события</h2>
-      <div class="event-info__body"><p class="event-info__text">Информация скоро.</p><p class="event-info__text">Следи за анонсами — новые даты и города появятся здесь первыми.</p></div>
+      <div class="event-info__body"><p class="event-info__text">18 декабря — Санкт-Петербург · 19 декабря — Москва.</p><p class="event-info__text">31 декабря — Новый год в Казани. Выбирай своё событие.</p></div>
       <div class="event-info__closing"><a class="event-ticket-cta is-revealed" href="./upcoming-events.html"><span>Смотреть все события</span></a></div>
     </article>
   </section>
@@ -393,7 +406,7 @@
       <h2 class="site-faq__title" id="faq-title">Вопросы<br>и ответы</h2>
       <div class="faq-grid">
         <details class="faq-item"><summary>Как часто проводите мероприятия?</summary><p>Собираемся регулярно — следи за анонсами в Telegram и Instagram. Обычно несколько событий в месяц, летом чаще.</p></details>
-        <details class="faq-item"><summary>Где проходят события?</summary><p>20 ноября — «КОРСТОН» (Drink Mall, 3 этаж, ул. Н.Ершова, д.1) в Казани. Дальнейшие локации анонсируем заранее в соцсетях.</p></details>
+        <details class="faq-item"><summary>Где проходят события?</summary><p>В декабре встречаемся в Санкт-Петербурге, Москве и Казани. Площадки и подробности анонсируем отдельно.</p></details>
         <details class="faq-item"><summary>Как купить билет?</summary><p>Только через официальный билетный оператор. Кнопка «Купить билет» на сайте ведёт в защищённый виджет покупки.</p></details>
         <details class="faq-item"><summary>Есть ли возрастное ограничение?</summary><p>Да, событие <strong>18+</strong>. На входе могут попросить оригинал документа, подтверждающего возраст.</p></details>
         <details class="faq-item"><summary>Как вернуть билет?</summary><p>Возврат оформляется через интерфейс или поддержку билетного оператора в порядке, предусмотренном законодательством РФ и условиями продажи.</p></details>
@@ -513,7 +526,7 @@
     menu.querySelectorAll('a').forEach(link=>{ link.addEventListener('click',()=>toggleMenu(false)); });
 
     const ticketModal=document.getElementById('ticketModal'), ticketOpens=document.querySelectorAll('[data-ticket-open]'), ticketClose=document.getElementById('ticketClose'), ticketFrame=document.getElementById('widget-iframe'), heroScrollCue=document.getElementById('heroScrollCue'), heroEventLink=document.getElementById('heroEventLink'), ticketFloat=document.querySelector('.ticket-float');
-    const TICKET_URL='https://voroh.ru/widget/event/1043748/01a17876-e4b4-8c39-9c9a-f002803f071c/';
+    const TICKET_URL='https://voroh.ru/widget/event/1045324/01a20e35-cc74-8bce-b5bb-ff97a9e5c0b5/';
     let ticketFocusReturn=null;
     function setTicketModal(open, trigger) {
       if (!ticketModal) return;
@@ -523,7 +536,7 @@
           const endpoint=trigger?.dataset?.ticketUrl || (ticketFrame.dataset && ticketFrame.dataset.src) || TICKET_URL;
           const title=trigger?.dataset?.ticketTitle;
           if (title) document.getElementById('ticketTitle').textContent=title;
-          document.querySelector('.ticket-modal__eyebrow').textContent='Билеты · '+(trigger?.dataset?.ticketDate || '20 ноября');
+          document.querySelector('.ticket-modal__eyebrow').textContent='Билеты · '+(trigger?.dataset?.ticketDate || '18 декабря');
           if (endpoint && ticketFrame.getAttribute('src')!==endpoint) ticketFrame.src=endpoint;
         }
         if (typeof toggleMenu==='function') toggleMenu(false);
