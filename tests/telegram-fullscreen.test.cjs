@@ -6,6 +6,7 @@ for (const page of ['index.html', 'moscow.html', 'spb.html', 'kazan.html', 'ufa.
   const content = fs.readFileSync(page, 'utf8');
   assert.ok(content.includes('https://telegram.org/js/telegram-web-app.js'), `${page} must load Telegram SDK`);
   assert.ok(content.includes('telegram-fullscreen.js?v=20261126-3'), `${page} must initialize Telegram on navigation`);
+  assert.match(content, /<meta\s+name=["']tg:swipes:y["']\s+content=["']none["']\s*\/?\s*>/i, `${page} must disable Telegram Android browser dismiss gesture`);
 }
 const source = fs.readFileSync('telegram-fullscreen.js', 'utf8');
 function run(app, hash = '#tgWebAppData=auth&tgWebAppVersion=8.0') {
