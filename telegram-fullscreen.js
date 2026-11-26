@@ -1,0 +1,20 @@
+(() => {
+  const params = new URLSearchParams(window.location.hash.slice(1));
+  const app = window.Telegram && window.Telegram.WebApp;
+  if (!app || !params.has('tgWebAppVersion')) return;
+
+  app.ready();
+  const expand = () => { if (typeof app.expand === 'function') app.expand(); };
+  if (typeof app.isVersionAtLeast !== 'function' || !app.isVersionAtLeast('8.0') || typeof app.requestFullscreen !== 'function') {
+    expand();
+    return;
+  }
+  if (typeof app.onEvent === 'function') {
+    app.onEvent('fullscreenFailed', event => {
+      if (event.error !== 'ALREADY_FULLSCREEN') expand();
+    });
+  }
+  if (!app.isFullscreen) {
+    try { app.requestFullscreen(); } catch (_) { expand(); }
+  }
+})();
