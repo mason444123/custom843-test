@@ -4,6 +4,9 @@
   if (!app || !params.has('tgWebAppVersion')) return;
 
   app.ready();
+  if (typeof app.isVersionAtLeast === 'function' && app.isVersionAtLeast('7.7') && typeof app.disableVerticalSwipes === 'function') {
+    try { app.disableVerticalSwipes(); } catch (_) { /* Older clients may ignore this option. */ }
+  }
   const expand = () => { if (typeof app.expand === 'function') app.expand(); };
   if (typeof app.isVersionAtLeast !== 'function' || !app.isVersionAtLeast('8.0') || typeof app.requestFullscreen !== 'function') {
     expand();

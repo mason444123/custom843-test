@@ -9,8 +9,14 @@ function run(app, hash = '#tgWebAppData=auth&tgWebAppVersion=8.0') {
   vm.runInNewContext(source, context);
 }
 let calls = [];
-run({isVersionAtLeast: () => true, ready: () => calls.push('ready'), requestFullscreen: () => calls.push('fullscreen'), expand: () => calls.push('expand'), onEvent: () => {}});
-assert.deepEqual(calls, ['ready', 'fullscreen']);
+run({isVersionAtLeast: () => true, ready: () => calls.push('ready'), disableVerticalSwipes: () => calls.push('disable-swipes'), requestFullscreen: () => calls.push('fullscreen'), expand: () => calls.push('expand'), onEvent: () => {}});
+assert.deepEqual(calls, ['ready', 'disable-swipes', 'fullscreen']);
+calls = [];
+run({isVersionAtLeast: () => true, isFullscreen: true, ready: () => calls.push('ready'), disableVerticalSwipes: () => calls.push('disable-swipes'), requestFullscreen: () => calls.push('fullscreen'), expand: () => calls.push('expand'), onEvent: () => {}});
+assert.deepEqual(calls, ['ready', 'disable-swipes']);
+calls = [];
+run({isVersionAtLeast: v => v === '7.7', ready: () => calls.push('ready'), disableVerticalSwipes: () => calls.push('disable-swipes'), requestFullscreen: () => calls.push('fullscreen'), expand: () => calls.push('expand'), onEvent: () => {}});
+assert.deepEqual(calls, ['ready', 'disable-swipes', 'expand']);
 calls = [];
 run({isVersionAtLeast: () => false, ready: () => calls.push('ready'), requestFullscreen: () => calls.push('fullscreen'), expand: () => calls.push('expand'), onEvent: () => {}});
 assert.deepEqual(calls, ['ready', 'expand']);
