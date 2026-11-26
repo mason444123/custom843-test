@@ -1,7 +1,9 @@
 (() => {
   const params = new URLSearchParams(window.location.hash.slice(1));
-  const app = window.Telegram && window.Telegram.WebApp;
-  if (!app || !params.has('tgWebAppVersion')) return;
+  const telegram = window.Telegram;
+  const app = telegram && telegram.WebApp;
+  const initParams = telegram && telegram.WebView && telegram.WebView.initParams;
+  if (!app || !(params.has('tgWebAppVersion') || (initParams && initParams.tgWebAppVersion))) return;
 
   app.ready();
   if (typeof app.isVersionAtLeast === 'function' && app.isVersionAtLeast('7.7') && typeof app.disableVerticalSwipes === 'function') {
